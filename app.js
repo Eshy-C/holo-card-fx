@@ -1,11 +1,17 @@
 /**
- * HoloCard FX - Pro Polaroid Studio with Fine-Tuning Sliders & Optical Engine
+ * HoloCard FX - Pro Polaroid Studio
+ * Robust Direct-Binding Engine for Real-Time Adjustments & Export
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const polaroidCard = document.getElementById('polaroidCard');
   const cardScene = document.getElementById('cardScene');
+  const photoPocket = document.getElementById('photoPocket');
+  const polaroidImage = document.getElementById('polaroidImage');
+  const filmGlare = document.getElementById('filmGlare');
+  const filmHologram = document.getElementById('filmHologram');
+  const photoVignette = document.getElementById('photoVignette');
   
   const inputCaption = document.getElementById('inputCaption');
   const displayCaption = document.getElementById('displayCaption');
@@ -14,14 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const displayDate = document.getElementById('displayDate');
   
   const imageInput = document.getElementById('imageInput');
-  const polaroidImage = document.getElementById('polaroidImage');
   const uploadDropzone = document.getElementById('uploadDropzone');
   
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnExport = document.getElementById('btnExport');
   const btnReset = document.getElementById('btnReset');
   
-  // Sliders & Value Readouts
+  // Sliders
   const sliderHolo = document.getElementById('sliderHolo');
   const valHolo = document.getElementById('valHolo');
   
@@ -46,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderRadius = document.getElementById('sliderRadius');
   const valRadius = document.getElementById('valRadius');
 
-  // Groups
+  // Button Groups
   const styleBtns = document.querySelectorAll('.style-btn');
   const paperBtns = document.querySelectorAll('.paper-btn');
   const inkDots = document.querySelectorAll('.ink-dot');
@@ -54,8 +59,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isAutoSpinning = false;
 
+  // Global State for State-Driven Rendering
+  const state = {
+    holoOpacity: 0.45,
+    glareOpacity: 0.35,
+    brightness: 100,
+    contrast: 105,
+    saturation: 110,
+    warmth: 15,
+    vignette: 30,
+    radius: 4,
+    theme: 'rainbow',
+    paper: 'white',
+    inkColor: '#1e293b'
+  };
+
   // ========================================================
-  // 🖼️ High Quality Polaroid Presets (Zero CORS)
+  // ⚡ Direct State Applier (Guaranteed Instant Visual Update)
+  // ========================================================
+  function applyState() {
+    // 1. Photo Image Filter
+    if (polaroidImage) {
+      polaroidImage.style.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
+    }
+
+    // 2. Optical Layers
+    if (filmHologram) {
+      filmHologram.style.opacity = state.holoOpacity;
+    }
+    if (filmGlare) {
+      filmGlare.style.opacity = state.glareOpacity;
+    }
+
+    // 3. Vignette Shadow
+    if (photoVignette) {
+      const vBlur = Math.round((state.vignette / 100) * 60);
+      const vAlpha = (state.vignette / 100) * 0.7;
+      photoVignette.style.boxShadow = `inset 0 0 ${vBlur}px rgba(0, 0, 0, ${vAlpha})`;
+    }
+
+    // 4. Photo Pocket Radius
+    if (photoPocket) {
+      photoPocket.style.borderRadius = `${state.radius}px`;
+    }
+
+    // 5. Ink Color
+    if (displayCaption) {
+      displayCaption.style.color = state.inkColor;
+    }
+
+    // 6. Paper Background
+    if (polaroidCard) {
+      polaroidCard.className = `polaroid-card paper-${state.paper}${isAutoSpinning ? ' auto-spinning' : ''}`;
+    }
+
+    // 7. Theme
+    document.body.className = `theme-${state.theme}`;
+  }
+
+  // ========================================================
+  // 🖼️ Clean SVG Preset Data URIs (Instant & Zero CORS)
   // ========================================================
   function generatePresetSVG(type) {
     let svg = '';
@@ -110,10 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }
 
-  // Set default initial image safely
+  // Initialize Default Image
   polaroidImage.src = generatePresetSVG('portrait');
+  applyState();
 
-  // Text Binding
+  // ========================================================
+  // ✍️ Text Input Binding
+  // ========================================================
   inputCaption.addEventListener('input', (e) => {
     displayCaption.textContent = e.target.value || 'Untitled';
   });
@@ -122,86 +188,110 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ========================================================
-  // 🎛️ Interactive Granular Sliders Binding
+  // 🎛️ Granular Sliders Event Binding
   // ========================================================
   sliderHolo.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valHolo.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--holo-opacity', val / 100);
+    state.holoOpacity = e.target.value / 100;
+    valHolo.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderGlare.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valGlare.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--glare-opacity', val / 100);
+    state.glareOpacity = e.target.value / 100;
+    valGlare.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderBrightness.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valBrightness.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--photo-brightness', val / 100);
+    state.brightness = e.target.value;
+    valBrightness.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderContrast.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valContrast.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--photo-contrast', val / 100);
+    state.contrast = e.target.value;
+    valContrast.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderSaturation.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valSaturation.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--photo-saturation', val / 100);
+    state.saturation = e.target.value;
+    valSaturation.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderWarmth.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valWarmth.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--photo-warmth', val / 100);
+    state.warmth = e.target.value;
+    valWarmth.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderVignette.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valVignette.textContent = `${val}%`;
-    document.documentElement.style.setProperty('--photo-vignette', val / 100);
+    state.vignette = e.target.value;
+    valVignette.textContent = `${e.target.value}%`;
+    applyState();
   });
 
   sliderRadius.addEventListener('input', (e) => {
-    const val = e.target.value;
-    valRadius.textContent = `${val}px`;
-    document.documentElement.style.setProperty('--photo-radius', `${val}px`);
+    state.radius = e.target.value;
+    valRadius.textContent = `${e.target.value}px`;
+    applyState();
   });
 
   // ========================================================
-  // 📄 Paper Tone Selector
+  // 🎨 Style, Paper, Ink & Preset Click Handlers
   // ========================================================
+  styleBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      styleBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.theme = btn.dataset.style;
+      applyState();
+    });
+  });
+
   paperBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       paperBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
-      const paper = btn.dataset.paper;
-      
-      polaroidCard.classList.remove('paper-white', 'paper-cream', 'paper-pink', 'paper-black');
-      polaroidCard.classList.add(`paper-${paper}`);
+      state.paper = btn.dataset.paper;
+      applyState();
     });
   });
 
-  // ========================================================
-  // ✍️ Ink Color Selector
-  // ========================================================
   inkDots.forEach((dot) => {
     dot.addEventListener('click', () => {
       inkDots.forEach((d) => d.classList.remove('active'));
       dot.classList.add('active');
-      const inkColor = dot.dataset.ink;
-      document.documentElement.style.setProperty('--ink-color', inkColor);
+      state.inkColor = dot.dataset.ink;
+      applyState();
+    });
+  });
+
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      polaroidImage.src = generatePresetSVG(btn.dataset.preset);
     });
   });
 
   // ========================================================
-  // 🔄 Reset All Parameters
+  // ↺ Reset All Controls
   // ========================================================
   btnReset.addEventListener('click', () => {
+    state.holoOpacity = 0.45;
+    state.glareOpacity = 0.35;
+    state.brightness = 100;
+    state.contrast = 105;
+    state.saturation = 110;
+    state.warmth = 15;
+    state.vignette = 30;
+    state.radius = 4;
+    state.theme = 'rainbow';
+    state.paper = 'white';
+    state.inkColor = '#1e293b';
+
     sliderHolo.value = 45; valHolo.textContent = '45%';
     sliderGlare.value = 35; valGlare.textContent = '35%';
     sliderBrightness.value = 100; valBrightness.textContent = '100%';
@@ -211,23 +301,15 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderVignette.value = 30; valVignette.textContent = '30%';
     sliderRadius.value = 4; valRadius.textContent = '4px';
 
-    document.documentElement.style.setProperty('--holo-opacity', 0.45);
-    document.documentElement.style.setProperty('--glare-opacity', 0.35);
-    document.documentElement.style.setProperty('--photo-brightness', 1);
-    document.documentElement.style.setProperty('--photo-contrast', 1.05);
-    document.documentElement.style.setProperty('--photo-saturation', 1.1);
-    document.documentElement.style.setProperty('--photo-warmth', 0.15);
-    document.documentElement.style.setProperty('--photo-vignette', 0.3);
-    document.documentElement.style.setProperty('--photo-radius', '4px');
-    document.documentElement.style.setProperty('--ink-color', '#1e293b');
-
-    // Reset style & paper & ink
     styleBtns[0].click();
     paperBtns[0].click();
     inkDots[0].click();
+    applyState();
   });
 
-  // 3D Tilt & Light Physics
+  // ========================================================
+  // 🕹️ 3D Mouse Movement & Parallax Tilt
+  // ========================================================
   let bounds;
   function updateBounds() {
     bounds = polaroidCard.getBoundingClientRect();
@@ -300,17 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Style Selector
-  styleBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      styleBtns.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      const style = btn.dataset.style;
-      document.body.className = `theme-${style}`;
-    });
-  });
-
-  // Image Upload & Drag-and-Drop
+  // ========================================================
+  // 📂 Upload & Drag-and-Drop
+  // ========================================================
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -347,14 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  presetBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const preset = btn.dataset.preset;
-      polaroidImage.src = generatePresetSVG(preset);
-    });
-  });
-
-  // Auto-Spin
+  // 🎥 360° Auto-Spin
   btnAutoSpin.addEventListener('click', () => {
     isAutoSpinning = !isAutoSpinning;
     if (isAutoSpinning) {
@@ -371,7 +438,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // HD Snapshot Exporter with Exact Tuned Parameters
+  // ========================================================
+  // 📸 Ultra-High Resolution HD Exporter
+  // ========================================================
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
     btnExport.textContent = '⏳ 高清生成中...';
