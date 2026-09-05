@@ -241,5 +241,6 @@ const {{ chromium }} = require('playwright');
 
 if __name__ == '__main__':
     print(f"🚀 Starting HoloCard Studio Server with Playwright Capture on port {PORT}...")
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), StudioHandler) as httpd:
         httpd.serve_forever()
