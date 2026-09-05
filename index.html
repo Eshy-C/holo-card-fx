@@ -39,16 +39,46 @@
         <p>自由微调全息光影、胶片影调、相纸材质与手写笔迹</p>
       </div>
 
-      <!-- 1. Photo Upload Card -->
+      <!-- 1. Photo Upload Card (Single / Dual Couple Mode) -->
       <section class="control-card">
-        <div class="card-title"><span class="card-icon">🖼️</span> 照片导入</div>
-        <div class="upload-box" id="uploadDropzone">
-          <input type="file" id="imageInput" accept="image/*" class="file-input">
-          <div class="upload-content">
-            <span class="upload-icon">📂</span>
-            <div class="upload-text-group">
-              <span class="upload-text">点击或拖拽上传照片</span>
-              <span class="upload-hint">支持 JPG、PNG、WebP 等格式</span>
+        <div class="card-title-row">
+          <div class="card-title"><span class="card-icon">🖼️</span> 照片导入</div>
+          <div class="mode-tabs">
+            <button class="mode-tab active" id="tabSingle" data-mode="single">👤 单人</button>
+            <button class="mode-tab" id="tabDual" data-mode="dual">👫 双人情侣</button>
+          </div>
+        </div>
+
+        <!-- Single Upload Slot -->
+        <div class="upload-container" id="singleUploadWrap">
+          <div class="upload-box" id="uploadDropzone">
+            <input type="file" id="imageInput" accept="image/*" multiple class="file-input">
+            <div class="upload-content">
+              <span class="upload-icon">📂</span>
+              <div class="upload-text-group">
+                <span class="upload-text">点击或拖拽上传单张照片</span>
+                <span class="upload-hint">支持 JPG、PNG、WebP（支持同时拖入2张转为情侣模式）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual Couple Upload Slots -->
+        <div class="dual-upload-grid" id="dualUploadWrap" style="display: none;">
+          <div class="upload-box dual-slot" id="uploadDropzone1">
+            <input type="file" id="imageInput1" accept="image/*" class="file-input">
+            <div class="upload-content-mini">
+              <span class="upload-mini-badge">左侧 / TA</span>
+              <span class="upload-icon-sm">📷</span>
+              <span class="upload-text-sm" id="slotText1">上传左图</span>
+            </div>
+          </div>
+          <div class="upload-box dual-slot" id="uploadDropzone2">
+            <input type="file" id="imageInput2" accept="image/*" class="file-input">
+            <div class="upload-content-mini">
+              <span class="upload-mini-badge">右侧 / 我</span>
+              <span class="upload-icon-sm">📷</span>
+              <span class="upload-text-sm" id="slotText2">上传右图</span>
             </div>
           </div>
         </div>
@@ -203,7 +233,16 @@
             
             <!-- Dark Glossy Photo Area (Square / Classic 1:1 Aspect) -->
             <div class="photo-pocket" id="photoPocket">
-              <img id="polaroidImage" src="" alt="Polaroid Photo" crossorigin="anonymous">
+              <!-- Single Photo Image -->
+              <img id="polaroidImage" src="" alt="Polaroid Photo" class="polaroid-img-single" crossorigin="anonymous">
+
+              <!-- Dual Couple Photos Grid -->
+              <div class="dual-photo-wrap" id="dualPhotoWrap" style="display: none;">
+                <img id="polaroidImage1" src="" alt="Left Photo" class="dual-photo-left" crossorigin="anonymous">
+                <div class="dual-photo-divider"></div>
+                <img id="polaroidImage2" src="" alt="Right Photo" class="dual-photo-right" crossorigin="anonymous">
+              </div>
+
               <!-- Internal Glare & Shimmer Layers (Strictly clipped to Photo Box) -->
               <div class="film-glare" id="filmGlare"></div>
               <div class="film-hologram" id="filmHologram"></div>

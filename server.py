@@ -24,15 +24,34 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/api/capture':
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)
-            
             try:
                 payload = json.loads(post_data.decode('utf-8'))
                 state = payload.get('state', {})
-                card_html = payload.get('cardHtml', '')
+                mode = payload.get('mode', state.get('mode', 'single'))
                 image_src = payload.get('imageSrc', '')
+                image_src1 = payload.get('imageSrc1', '')
+                image_src2 = payload.get('imageSrc2', '')
                 
-                # Check if playwright is available via python or npx
-                # We render a dedicated high-DPI capture template
+                # Build photo pocket markup based on mode
+                if mode == 'dual':
+                    photo_pocket_inner = f"""
+        <div style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; background: #18181b;">
+          <img src="{image_src1}" style="width: 50%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
+          <div style="width: 2px; height: 100%; background: rgba(255,255,255,0.4); flex-shrink: 0; z-index: 2;"></div>
+          <img src="{image_src2}" style="width: 50%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
+        </div>
+        <div class="film-glare"></div>
+        <div class="film-hologram"></div>
+        <div class="photo-vignette"></div>
+"""
+                else:
+                    photo_pocket_inner = f"""
+        <img src="{image_src}" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
+        <div class="film-glare"></div>
+        <div class="film-hologram"></div>
+        <div class="photo-vignette"></div>
+"""
+
                 capture_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -76,13 +95,6 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
       border-radius: {state.get('radius', 4)}px;
       overflow: hidden;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
-    }}
-    .photo-pocket img {{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);
     }}
     .photo-vignette {{
       position: absolute;
@@ -144,10 +156,7 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
   <div class="polaroid-card" id="captureTarget">
     <div class="polaroid-body">
       <div class="photo-pocket">
-        <img src="{image_src}">
-        <div class="film-glare"></div>
-        <div class="film-hologram"></div>
-        <div class="photo-vignette"></div>
+        {photo_pocket_inner}
       </div>
       <div class="polaroid-chin">
         <div class="handwritten-caption">{payload.get('caption', '')}</div>

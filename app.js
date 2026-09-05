@@ -1,6 +1,6 @@
 /**
  * HoloCard FX - Pro Polaroid Studio
- * Direct DOM Reactivity + Playwright Backend API / Canvas Hardware Fallback
+ * Direct DOM Reactivity + Single / Dual Couple Photos + Playwright & Canvas 2D
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,7 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const polaroidCard = document.getElementById('polaroidCard');
   const cardScene = document.getElementById('cardScene');
   const photoPocket = document.getElementById('photoPocket');
+  
   const polaroidImage = document.getElementById('polaroidImage');
+  const dualPhotoWrap = document.getElementById('dualPhotoWrap');
+  const polaroidImage1 = document.getElementById('polaroidImage1');
+  const polaroidImage2 = document.getElementById('polaroidImage2');
+  
   const filmGlare = document.getElementById('filmGlare');
   const filmHologram = document.getElementById('filmHologram');
   const photoVignette = document.getElementById('photoVignette');
@@ -19,8 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputDate = document.getElementById('inputDate');
   const displayDate = document.getElementById('displayDate');
   
+  // Mode Tabs & Upload Wrappers
+  const tabSingle = document.getElementById('tabSingle');
+  const tabDual = document.getElementById('tabDual');
+  const singleUploadWrap = document.getElementById('singleUploadWrap');
+  const dualUploadWrap = document.getElementById('dualUploadWrap');
+  
   const imageInput = document.getElementById('imageInput');
   const uploadDropzone = document.getElementById('uploadDropzone');
+  const imageInput1 = document.getElementById('imageInput1');
+  const uploadDropzone1 = document.getElementById('uploadDropzone1');
+  const imageInput2 = document.getElementById('imageInput2');
+  const uploadDropzone2 = document.getElementById('uploadDropzone2');
+  
+  const slotText1 = document.getElementById('slotText1');
+  const slotText2 = document.getElementById('slotText2');
   
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnExport = document.getElementById('btnExport');
@@ -58,8 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isAutoSpinning = false;
 
-  // Global State for State-Driven Rendering
+  // Global State
   const state = {
+    mode: 'single', // 'single' | 'dual'
     holoOpacity: 0.45,
     glareOpacity: 0.35,
     brightness: 100,
@@ -73,12 +92,78 @@ document.addEventListener('DOMContentLoaded', () => {
     inkColor: '#1e293b'
   };
 
+  // Default Placeholders (SVG Data URIs)
+  const defaultPlaceholderSingle = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+    <defs>
+      <linearGradient id="bgInit" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fed7aa"/>
+        <stop offset="50%" stop-color="#fb923c"/>
+        <stop offset="100%" stop-color="#ea580c"/>
+      </linearGradient>
+    </defs>
+    <rect width="600" height="600" fill="url(#bgInit)"/>
+    <circle cx="300" cy="230" r="100" fill="#431407" opacity="0.9"/>
+    <circle cx="300" cy="240" r="85" fill="#ffedd5"/>
+    <path d="M160 520 C160 370, 440 370, 440 520 Z" fill="#1e293b"/>
+  </svg>`)}`;
+
+  const defaultPlaceholderLeft = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600" viewBox="0 0 300 600">
+    <defs>
+      <linearGradient id="bgLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#bae6fd"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+    </defs>
+    <rect width="300" height="600" fill="url(#bgLeft)"/>
+    <circle cx="150" cy="240" r="70" fill="#0f172a" opacity="0.85"/>
+    <circle cx="150" cy="245" r="58" fill="#e0f2fe"/>
+    <path d="M50 480 C50 350, 250 350, 250 480 Z" fill="#0369a1"/>
+    <text x="150" y="530" fill="#ffffff" font-size="20" font-family="sans-serif" font-weight="bold" text-anchor="middle">TA (Left)</text>
+  </svg>`)}`;
+
+  const defaultPlaceholderRight = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600" viewBox="0 0 300 600">
+    <defs>
+      <linearGradient id="bgRight" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fbcfe8"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+    </defs>
+    <rect width="300" height="600" fill="url(#bgRight)"/>
+    <circle cx="150" cy="240" r="70" fill="#4a044e" opacity="0.85"/>
+    <circle cx="150" cy="245" r="58" fill="#fdf2f8"/>
+    <path d="M50 480 C50 350, 250 350, 250 480 Z" fill="#be185d"/>
+    <text x="150" y="530" fill="#ffffff" font-size="20" font-family="sans-serif" font-weight="bold" text-anchor="middle">ME (Right)</text>
+  </svg>`)}`;
+
+  polaroidImage.src = defaultPlaceholderSingle;
+  polaroidImage1.src = defaultPlaceholderLeft;
+  polaroidImage2.src = defaultPlaceholderRight;
+
   // ========================================================
   // ⚡ Direct State Applier (Real-time 0ms DOM Rendering)
   // ========================================================
   function applyState() {
-    if (polaroidImage) {
-      polaroidImage.style.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
+    const filterStyle = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
+    
+    if (polaroidImage) polaroidImage.style.filter = filterStyle;
+    if (polaroidImage1) polaroidImage1.style.filter = filterStyle;
+    if (polaroidImage2) polaroidImage2.style.filter = filterStyle;
+
+    // Toggle Single vs Dual
+    if (state.mode === 'dual') {
+      if (polaroidImage) polaroidImage.style.display = 'none';
+      if (dualPhotoWrap) dualPhotoWrap.style.display = 'flex';
+      if (singleUploadWrap) singleUploadWrap.style.display = 'none';
+      if (dualUploadWrap) dualUploadWrap.style.display = 'grid';
+      tabSingle.classList.remove('active');
+      tabDual.classList.add('active');
+    } else {
+      if (polaroidImage) polaroidImage.style.display = 'block';
+      if (dualPhotoWrap) dualPhotoWrap.style.display = 'none';
+      if (singleUploadWrap) singleUploadWrap.style.display = 'block';
+      if (dualUploadWrap) dualUploadWrap.style.display = 'none';
+      tabSingle.classList.add('active');
+      tabDual.classList.remove('active');
     }
 
     if (filmHologram) {
@@ -109,23 +194,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.className = `theme-${state.theme}`;
   }
 
-  // Initial Default Placeholder
-  const defaultPlaceholder = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-    <defs>
-      <linearGradient id="bgInit" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#fed7aa"/>
-        <stop offset="50%" stop-color="#fb923c"/>
-        <stop offset="100%" stop-color="#ea580c"/>
-      </linearGradient>
-    </defs>
-    <rect width="600" height="600" fill="url(#bgInit)"/>
-    <circle cx="300" cy="230" r="100" fill="#431407" opacity="0.9"/>
-    <circle cx="300" cy="240" r="85" fill="#ffedd5"/>
-    <path d="M160 520 C160 370, 440 370, 440 520 Z" fill="#1e293b"/>
-  </svg>`;
-  
-  polaroidImage.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(defaultPlaceholder)}`;
   applyState();
+
+  // Mode Switch Tabs
+  tabSingle.addEventListener('click', () => {
+    state.mode = 'single';
+    applyState();
+  });
+
+  tabDual.addEventListener('click', () => {
+    state.mode = 'dual';
+    if (inputCaption.value === 'Summer Vibes · 2026') {
+      inputCaption.value = 'You & Me · Forever';
+      displayCaption.textContent = 'You & Me · Forever';
+    }
+    applyState();
+  });
 
   // Text Binding
   inputCaption.addEventListener('input', (e) => {
@@ -184,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyState();
   });
 
-  // Button Handlers
+  // Style Buttons
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
@@ -214,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reset Button
   btnReset.addEventListener('click', () => {
+    state.mode = 'single';
     state.holoOpacity = 0.45;
     state.glareOpacity = 0.35;
     state.brightness = 100;
@@ -235,6 +320,11 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderVignette.value = 30; valVignette.textContent = '30%';
     sliderRadius.value = 4; valRadius.textContent = '4px';
 
+    inputCaption.value = 'Summer Vibes · 2026';
+    displayCaption.textContent = 'Summer Vibes · 2026';
+    inputDate.value = '2026.09.05 / Tokyo';
+    displayDate.textContent = '2026.09.05 / Tokyo';
+
     styleBtns[0].click();
     paperBtns[0].click();
     inkDots[0].click();
@@ -252,7 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handlePointerMove(e) {
     if (isAutoSpinning) return;
-    
     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
     if (clientX === undefined) return;
@@ -314,40 +403,116 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Upload Handling
-  imageInput.addEventListener('change', (e) => {
+  // ========================================================
+  // 🖼️ Upload Handling (Single & Dual Mode)
+  // ========================================================
+  function handleFiles(files) {
+    if (!files || files.length === 0) return;
+    
+    if (files.length >= 2) {
+      // 2 files dropped -> switch to dual couple mode
+      state.mode = 'dual';
+      const r1 = new FileReader();
+      r1.onload = (e) => {
+        polaroidImage1.src = e.target.result;
+        if (slotText1) slotText1.textContent = files[0].name.slice(0, 8);
+      };
+      r1.readAsDataURL(files[0]);
+
+      const r2 = new FileReader();
+      r2.onload = (e) => {
+        polaroidImage2.src = e.target.result;
+        if (slotText2) slotText2.textContent = files[1].name.slice(0, 8);
+      };
+      r2.readAsDataURL(files[1]);
+
+      if (inputCaption.value === 'Summer Vibes · 2026') {
+        inputCaption.value = 'You & Me · Forever';
+        displayCaption.textContent = 'You & Me · Forever';
+      }
+      applyState();
+    } else {
+      // 1 file
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (state.mode === 'dual') {
+          polaroidImage1.src = event.target.result;
+          if (slotText1) slotText1.textContent = file.name.slice(0, 8);
+        } else {
+          polaroidImage.src = event.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  imageInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+  imageInput1.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        polaroidImage.src = event.target.result;
+        polaroidImage1.src = event.target.result;
+        if (slotText1) slotText1.textContent = file.name.slice(0, 8);
       };
       reader.readAsDataURL(file);
     }
   });
 
-  ['dragenter', 'dragover'].forEach((eventName) => {
-    uploadDropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      uploadDropzone.style.borderColor = '#f43f5e';
-    });
+  imageInput2.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        polaroidImage2.src = event.target.result;
+        if (slotText2) slotText2.textContent = file.name.slice(0, 8);
+      };
+      reader.readAsDataURL(file);
+    }
   });
 
-  ['dragleave', 'drop'].forEach((eventName) => {
-    uploadDropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      uploadDropzone.style.borderColor = '';
+  // Drag and Drop
+  [uploadDropzone, uploadDropzone1, uploadDropzone2].forEach((zone) => {
+    if (!zone) return;
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        zone.style.borderColor = '#f43f5e';
+      });
+    });
+    ['dragleave', 'drop'].forEach((eventName) => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        zone.style.borderColor = '';
+      });
     });
   });
 
   uploadDropzone.addEventListener('drop', (e) => {
+    handleFiles(e.dataTransfer.files);
+  });
+  uploadDropzone1.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        polaroidImage.src = event.target.result;
+    if (file) {
+      const r = new FileReader();
+      r.onload = (ev) => {
+        polaroidImage1.src = ev.target.result;
+        if (slotText1) slotText1.textContent = file.name.slice(0, 8);
       };
-      reader.readAsDataURL(file);
+      r.readAsDataURL(file);
+    }
+  });
+  uploadDropzone2.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const r = new FileReader();
+      r.onload = (ev) => {
+        polaroidImage2.src = ev.target.result;
+        if (slotText2) slotText2.textContent = file.name.slice(0, 8);
+      };
+      r.readAsDataURL(file);
     }
   });
 
@@ -368,6 +533,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Helper for Canvas 2D Cover Crop
+  function drawImageCover(ctx, img, x, y, w, h) {
+    if (!img || !img.naturalWidth) {
+      ctx.drawImage(img, x, y, w, h);
+      return;
+    }
+    const imgW = img.naturalWidth;
+    const imgH = img.naturalHeight;
+    const imgRatio = imgW / imgH;
+    const targetRatio = w / h;
+    let sx = 0, sy = 0, sw = imgW, sh = imgH;
+    if (imgRatio > targetRatio) {
+      sh = imgH;
+      sw = imgH * targetRatio;
+      sx = (imgW - sw) / 2;
+      sy = 0;
+    } else {
+      sw = imgW;
+      sh = imgW / targetRatio;
+      sx = 0;
+      sy = (imgH - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+  }
+
   // ========================================================
   // 📸 Ultra-High Definition Exporter (Playwright API + Canvas)
   // ========================================================
@@ -387,7 +577,10 @@ document.addEventListener('DOMContentLoaded', () => {
           state: state,
           caption: inputCaption.value || 'Untitled',
           date: inputDate.value || '',
-          imageSrc: polaroidImage.src
+          mode: state.mode,
+          imageSrc: polaroidImage.src,
+          imageSrc1: polaroidImage1.src,
+          imageSrc2: polaroidImage2.src
         })
       });
 
@@ -433,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.roundRect(0, 0, cardW, cardH, 6 * scale);
       ctx.fill();
 
-      // 2. Photo Area
+      // 2. Photo Area (Clipped with Radius)
       ctx.save();
       ctx.beginPath();
       ctx.roundRect(padX, padY, photoSize, photoSize, radius);
@@ -443,7 +636,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fillRect(padX, padY, photoSize, photoSize);
 
       ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
-      ctx.drawImage(polaroidImage, padX, padY, photoSize, photoSize);
+
+      if (state.mode === 'dual') {
+        const dividerW = 2 * scale;
+        const halfW = (photoSize - dividerW) / 2;
+        // Draw Left Photo
+        drawImageCover(ctx, polaroidImage1, padX, padY, halfW, photoSize);
+        // Draw Divider
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillRect(padX + halfW, padY, dividerW, photoSize);
+        ctx.restore();
+        // Draw Right Photo
+        drawImageCover(ctx, polaroidImage2, padX + halfW + dividerW, padY, halfW, photoSize);
+      } else {
+        drawImageCover(ctx, polaroidImage, padX, padY, photoSize, photoSize);
+      }
       ctx.filter = 'none';
 
       // 3. Glare
@@ -542,3 +750,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
