@@ -1,6 +1,6 @@
 /**
  * HoloCard FX - Pro Polaroid Studio
- * Direct DOM Reactivity + Pixel-Perfect HTML5 Canvas 2D Native Exporter
+ * Direct DOM Reactivity + Playwright Backend API / Canvas Hardware Fallback
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -369,15 +369,46 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ========================================================
-  // 📸 Native 2D Canvas Hardware Exporter (100% Pixel Perfect)
+  // 📸 Ultra-High Definition Exporter (Playwright API + Canvas)
   // ========================================================
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
-    btnExport.textContent = '⏳ 高清渲染中...';
+    btnExport.textContent = '⏳ Playwright 4K 渲染中...';
     btnExport.disabled = true;
 
+    const safeName = (inputCaption.value || 'Polaroid').replace(/\s+/g, '_');
+
+    // 1. Try Backend Playwright API first
     try {
-      // 3x Ultra-HD Print Canvas (990 x 1230 px)
+      const response = await fetch('/api/capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          state: state,
+          caption: inputCaption.value || 'Untitled',
+          date: inputDate.value || '',
+          imageSrc: polaroidImage.src
+        })
+      });
+
+      if (response.ok && response.headers.get('Content-Type')?.includes('image/png')) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `Polaroid-${safeName}-Playwright.png`;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        btnExport.textContent = originalText;
+        btnExport.disabled = false;
+        return;
+      }
+    } catch (e) {
+      // Backend not running (e.g. on static GitHub Pages), fall back to Hardware 2D Canvas
+    }
+
+    // 2. Hardware 2D Canvas Direct Rendering Fallback (990x1230 300DPI)
+    try {
       const scale = 3;
       const cardW = 330 * scale;
       const cardH = 410 * scale;
@@ -391,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.height = cardH;
       const ctx = canvas.getContext('2d');
 
-      // 1. Draw Paper Background
+      // 1. Paper
       let paperColor = '#fdfdfd';
       if (state.paper === 'cream') paperColor = '#fef7ea';
       else if (state.paper === 'pink') paperColor = '#fdf2f8';
@@ -402,22 +433,20 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.roundRect(0, 0, cardW, cardH, 6 * scale);
       ctx.fill();
 
-      // 2. Draw Photo Pocket Clip Area with Radius
+      // 2. Photo Area
       ctx.save();
       ctx.beginPath();
       ctx.roundRect(padX, padY, photoSize, photoSize, radius);
       ctx.clip();
 
-      // Base Black Background
       ctx.fillStyle = '#18181b';
       ctx.fillRect(padX, padY, photoSize, photoSize);
 
-      // 3. Draw Filtered Image
       ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
       ctx.drawImage(polaroidImage, padX, padY, photoSize, photoSize);
       ctx.filter = 'none';
 
-      // 4. Draw Glare Overlay (Natural 35° Soft Film Glare)
+      // 3. Glare
       if (state.glareOpacity > 0) {
         ctx.save();
         ctx.globalAlpha = state.glareOpacity;
@@ -431,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
       }
 
-      // 5. Draw Holographic Foil Overlay
+      // 4. Hologram
       if (state.holoOpacity > 0) {
         ctx.save();
         ctx.globalAlpha = state.holoOpacity;
@@ -450,7 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
           holoGrad.addColorStop(0.5, 'rgba(255, 235, 160, 0.6)');
           holoGrad.addColorStop(1, 'rgba(218, 165, 32, 0.9)');
         } else {
-          // Rainbow
           holoGrad.addColorStop(0, 'rgba(255, 0, 128, 0.7)');
           holoGrad.addColorStop(0.25, 'rgba(255, 140, 0, 0.7)');
           holoGrad.addColorStop(0.5, 'rgba(64, 224, 208, 0.7)');
@@ -462,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
       }
 
-      // 6. Draw Vignette (Radial Inner Shadow)
+      // 5. Vignette
       if (state.vignette > 0) {
         ctx.save();
         const vAlpha = (state.vignette / 100) * 0.7;
@@ -476,15 +504,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
       }
 
-      // End Photo Pocket Clip
       ctx.restore();
 
-      // 7. Draw Handwritten Caption & Date on Chin
+      // 6. Text
       const chinY = padY + photoSize + 8 * scale;
       const chinH = cardH - chinY;
       const textCenterY = chinY + chinH / 2;
 
-      // Caption
       ctx.save();
       ctx.translate(cardW / 2, textCenterY - 10 * scale);
       ctx.rotate(-0.5 * Math.PI / 180);
@@ -495,7 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fillText(inputCaption.value || 'Untitled', 0, 0);
       ctx.restore();
 
-      // Date
       ctx.save();
       ctx.fillStyle = '#64748b';
       ctx.font = `bold ${9.5 * scale}px 'JetBrains Mono', monospace, sans-serif`;
@@ -504,9 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fillText(inputDate.value || '', cardW / 2, textCenterY + 16 * scale);
       ctx.restore();
 
-      // 8. Trigger PNG Download
       const link = document.createElement('a');
-      const safeName = (inputCaption.value || 'Polaroid').replace(/\s+/g, '_');
       link.download = `Polaroid-${safeName}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
