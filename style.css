@@ -4,15 +4,26 @@
   --panel-border: rgba(255, 255, 255, 0.1);
   --text-main: #f0f3ff;
   --text-muted: #8c93b0;
-  --primary: #6366f1;
+  --primary: #f43f5e;
   
-  /* 3D variables */
+  /* 3D Motion Variables */
   --rx: 0deg;
   --ry: 0deg;
   --mx: 50%;
   --my: 50%;
   --posx: 50%;
   --posy: 50%;
+
+  /* Fine-tuning Granular Variables */
+  --holo-opacity: 0.45;
+  --glare-opacity: 0.35;
+  --photo-brightness: 1;
+  --photo-contrast: 1.05;
+  --photo-saturation: 1.1;
+  --photo-warmth: 0.15;
+  --photo-vignette: 0.3;
+  --photo-radius: 4px;
+  --ink-color: #1e293b;
 }
 
 * {
@@ -81,9 +92,9 @@ body {
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 6px;
-  background: #f43f5e;
+  background: linear-gradient(135deg, #f43f5e, #ec4899);
   color: #fff;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
 }
 
 .logo-text {
@@ -141,16 +152,16 @@ body {
   z-index: 5;
   display: flex;
   flex: 1;
-  max-width: 1300px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 28px;
-  gap: 36px;
+  padding: 24px;
+  gap: 32px;
 }
 
 /* Controls Panel */
 .controls-panel {
-  width: 420px;
+  width: 440px;
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 20px;
@@ -158,13 +169,21 @@ body {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  max-height: calc(100vh - 120px);
+  gap: 20px;
+  max-height: calc(100vh - 110px);
   overflow-y: auto;
 }
 
+.controls-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.controls-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
 .panel-header h2 {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
 }
@@ -187,6 +206,54 @@ body {
   color: #fda4af;
 }
 
+/* Sliders */
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.slider-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #f43f5e;
+  font-weight: 700;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #f43f5e;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.7);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
 /* Style Selector */
 .style-selector {
   display: grid;
@@ -198,14 +265,14 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   color: var(--text-main);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   transition: all 0.2s;
 }
 
@@ -221,21 +288,80 @@ body {
 }
 
 .style-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
 }
 .style-dot.rainbow { background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0); }
 .style-dot.sunset { background: linear-gradient(135deg, #ff7e5f, #feb47b, #ff2a6d); }
 .style-dot.cyber { background: linear-gradient(135deg, #00f0ff, #ff0055, #00ff66); }
-.style-dot.pure { background: #ffffff; border: 1px solid #cbd5e1; }
+.style-dot.golden { background: linear-gradient(135deg, #ffd700, #ff8c00, #b8860b); }
+
+/* Paper Buttons */
+.paper-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.paper-btn {
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paper-btn.active {
+  border-color: #f43f5e;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+}
+
+/* Ink Color Row */
+.ink-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ink-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ink-options {
+  display: flex;
+  gap: 8px;
+}
+
+.ink-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.ink-dot:hover {
+  transform: scale(1.15);
+}
+
+.ink-dot.active {
+  border-color: #f43f5e;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+  transform: scale(1.2);
+}
 
 /* Upload Box */
 .upload-box {
   position: relative;
   border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: 14px;
-  padding: 16px;
+  padding: 14px;
   text-align: center;
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -258,12 +384,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
-.upload-icon { font-size: 24px; }
-.upload-text { font-size: 13px; font-weight: 600; }
-.upload-hint { font-size: 11px; color: var(--text-muted); }
+.upload-icon { font-size: 20px; }
+.upload-text { font-size: 12px; font-weight: 600; }
+.upload-hint { font-size: 10px; color: var(--text-muted); }
 
 .preset-avatars {
   display: flex;
@@ -293,7 +419,7 @@ body {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .form-group label {
@@ -309,7 +435,7 @@ input[type="text"] {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   color: #fff;
-  padding: 9px 12px;
+  padding: 8px 12px;
   outline: none;
   transition: border-color 0.2s;
 }
@@ -344,26 +470,36 @@ input:focus {
 }
 
 /* =======================================================
-   📸 AUTHENTIC 3D POLAROID PHOTO
+   📸 DYNAMIC POLAROID PHOTO
    ======================================================= */
 .polaroid-card {
   position: relative;
   width: 330px;
   height: 410px;
-  background: #fdfdfd;
   border-radius: 6px;
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.75),
     0 0 20px rgba(255, 255, 255, 0.1);
   transform-style: preserve-3d;
   transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.18s ease-out, box-shadow 0.3s ease;
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease, background-color 0.3s;
   cursor: grab;
   user-select: none;
   overflow: hidden;
   padding: 16px 16px 0 16px;
   display: flex;
   flex-direction: column;
+}
+
+/* Paper Tones */
+.paper-white { background-color: #fdfdfd; }
+.paper-cream { background-color: #fef7ea; }
+.paper-pink { background-color: #fdf2f8; }
+.paper-black { background-color: #18181b; }
+
+.paper-black .handwritten-caption,
+.paper-black .handwritten-date {
+  color: #f4f4f5 !important;
 }
 
 .polaroid-card.auto-spinning {
@@ -392,7 +528,7 @@ input:focus {
   width: 298px;
   height: 298px;
   background: #18181b;
-  border-radius: 2px;
+  border-radius: var(--photo-radius);
   overflow: hidden;
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
 }
@@ -402,12 +538,19 @@ input:focus {
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: 
+    brightness(var(--photo-brightness)) 
+    contrast(var(--photo-contrast)) 
+    saturate(var(--photo-saturation)) 
+    sepia(var(--photo-warmth));
+  transition: filter 0.1s;
 }
 
-.photo-shadow {
+/* Vignette Shadow Overlay */
+.photo-vignette {
   position: absolute;
   inset: 0;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+  box-shadow: inset 0 0 calc(var(--photo-vignette) * 80px) rgba(0, 0, 0, var(--photo-vignette));
   pointer-events: none;
   z-index: 5;
 }
@@ -421,18 +564,18 @@ input:focus {
   align-items: center;
   padding: 6px 8px;
   gap: 2px;
-  background: #fdfdfd;
 }
 
 .handwritten-caption {
   font-family: 'Caveat', cursive;
   font-size: 24px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ink-color);
   letter-spacing: 0.5px;
   text-align: center;
   line-height: 1.1;
   transform: rotate(-0.5deg);
+  transition: color 0.2s;
 }
 
 .handwritten-date {
@@ -443,7 +586,7 @@ input:focus {
 }
 
 /* =======================================================
-   ✨ ACCURATE FILM GLARE & HOLOGRAPHIC COATING
+   ✨ FILM GLARE & HOLOGRAPHIC LAYERS
    ======================================================= */
 .film-glare {
   position: absolute;
@@ -454,11 +597,12 @@ input:focus {
   pointer-events: none;
   background: linear-gradient(
     calc(var(--rx) * 2 + 130deg),
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.06) 30%,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
     transparent 60%
   );
   mix-blend-mode: screen;
+  opacity: var(--glare-opacity);
 }
 
 .film-hologram {
@@ -469,8 +613,8 @@ input:focus {
   z-index: 4;
   pointer-events: none;
   mix-blend-mode: screen;
-  opacity: 0.45;
-  transition: opacity 0.3s;
+  opacity: var(--holo-opacity);
+  transition: opacity 0.2s;
 }
 
 /* Theme 1: Rainbow Holographic */
@@ -478,11 +622,11 @@ input:focus {
   background: 
     linear-gradient(
       calc(var(--rx) * 2.5 + 120deg),
-      rgba(255, 0, 128, 0.5) 0%,
-      rgba(255, 140, 0, 0.5) 25%,
-      rgba(64, 224, 208, 0.5) 50%,
-      rgba(123, 104, 238, 0.5) 75%,
-      rgba(255, 0, 128, 0.5) 100%
+      rgba(255, 0, 128, 0.7) 0%,
+      rgba(255, 140, 0, 0.7) 25%,
+      rgba(64, 224, 208, 0.7) 50%,
+      rgba(123, 104, 238, 0.7) 75%,
+      rgba(255, 0, 128, 0.7) 100%
     );
   background-size: 160% 160%;
   background-position: var(--posx) var(--posy);
@@ -493,9 +637,9 @@ input:focus {
   background: 
     linear-gradient(
       calc(var(--rx) * 2 + 45deg),
-      rgba(255, 126, 95, 0.6) 0%,
-      rgba(254, 180, 123, 0.5) 50%,
-      rgba(255, 42, 109, 0.6) 100%
+      rgba(255, 126, 95, 0.8) 0%,
+      rgba(254, 180, 123, 0.7) 50%,
+      rgba(255, 42, 109, 0.8) 100%
     );
   background-size: 160% 160%;
   background-position: var(--posx) var(--posy);
@@ -506,17 +650,25 @@ input:focus {
   background: 
     linear-gradient(
       calc(var(--ry) * 2.5 + 90deg),
-      rgba(0, 240, 255, 0.6) 0%,
-      rgba(255, 0, 85, 0.6) 50%,
-      rgba(0, 255, 102, 0.6) 100%
+      rgba(0, 240, 255, 0.8) 0%,
+      rgba(255, 0, 85, 0.8) 50%,
+      rgba(0, 255, 102, 0.8) 100%
     );
   background-size: 160% 160%;
   background-position: var(--posx) var(--posy);
 }
 
-/* Theme 4: Pure (Zero Holo Coating) */
-.theme-pure .film-hologram {
-  display: none;
+/* Theme 4: Golden Shimmer */
+.theme-golden .film-hologram {
+  background: 
+    linear-gradient(
+      calc(var(--rx) * 2 + 135deg),
+      rgba(255, 215, 0, 0.9) 0%,
+      rgba(255, 235, 160, 0.6) 50%,
+      rgba(218, 165, 32, 0.9) 100%
+    );
+  background-size: 160% 160%;
+  background-position: var(--posx) var(--posy);
 }
 
 /* Responsive */

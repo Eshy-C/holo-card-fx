@@ -1,8 +1,9 @@
 /**
- * HoloCard FX - Authentic 3D Polaroid Engine & Exporter
+ * HoloCard FX - Pro Polaroid Studio with Fine-Tuning Sliders & Optical Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // DOM Elements
   const polaroidCard = document.getElementById('polaroidCard');
   const cardScene = document.getElementById('cardScene');
   
@@ -18,12 +19,44 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnExport = document.getElementById('btnExport');
+  const btnReset = document.getElementById('btnReset');
+  
+  // Sliders & Value Readouts
+  const sliderHolo = document.getElementById('sliderHolo');
+  const valHolo = document.getElementById('valHolo');
+  
+  const sliderGlare = document.getElementById('sliderGlare');
+  const valGlare = document.getElementById('valGlare');
+  
+  const sliderBrightness = document.getElementById('sliderBrightness');
+  const valBrightness = document.getElementById('valBrightness');
+  
+  const sliderContrast = document.getElementById('sliderContrast');
+  const valContrast = document.getElementById('valContrast');
+  
+  const sliderSaturation = document.getElementById('sliderSaturation');
+  const valSaturation = document.getElementById('valSaturation');
+  
+  const sliderWarmth = document.getElementById('sliderWarmth');
+  const valWarmth = document.getElementById('valWarmth');
+  
+  const sliderVignette = document.getElementById('sliderVignette');
+  const valVignette = document.getElementById('valVignette');
+  
+  const sliderRadius = document.getElementById('sliderRadius');
+  const valRadius = document.getElementById('valRadius');
+
+  // Groups
   const styleBtns = document.querySelectorAll('.style-btn');
+  const paperBtns = document.querySelectorAll('.paper-btn');
+  const inkDots = document.querySelectorAll('.ink-dot');
   const presetBtns = document.querySelectorAll('.preset-btn');
 
   let isAutoSpinning = false;
 
-  // Generate robust Base64 SVG Data URIs with encodeURIComponent
+  // ========================================================
+  // 🖼️ High Quality Polaroid Presets (Zero CORS)
+  // ========================================================
   function generatePresetSVG(type) {
     let svg = '';
     if (type === 'portrait') {
@@ -86,6 +119,112 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   inputDate.addEventListener('input', (e) => {
     displayDate.textContent = e.target.value || '';
+  });
+
+  // ========================================================
+  // 🎛️ Interactive Granular Sliders Binding
+  // ========================================================
+  sliderHolo.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valHolo.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--holo-opacity', val / 100);
+  });
+
+  sliderGlare.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valGlare.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--glare-opacity', val / 100);
+  });
+
+  sliderBrightness.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valBrightness.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--photo-brightness', val / 100);
+  });
+
+  sliderContrast.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valContrast.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--photo-contrast', val / 100);
+  });
+
+  sliderSaturation.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valSaturation.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--photo-saturation', val / 100);
+  });
+
+  sliderWarmth.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valWarmth.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--photo-warmth', val / 100);
+  });
+
+  sliderVignette.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valVignette.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--photo-vignette', val / 100);
+  });
+
+  sliderRadius.addEventListener('input', (e) => {
+    const val = e.target.value;
+    valRadius.textContent = `${val}px`;
+    document.documentElement.style.setProperty('--photo-radius', `${val}px`);
+  });
+
+  // ========================================================
+  // 📄 Paper Tone Selector
+  // ========================================================
+  paperBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      paperBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const paper = btn.dataset.paper;
+      
+      polaroidCard.classList.remove('paper-white', 'paper-cream', 'paper-pink', 'paper-black');
+      polaroidCard.classList.add(`paper-${paper}`);
+    });
+  });
+
+  // ========================================================
+  // ✍️ Ink Color Selector
+  // ========================================================
+  inkDots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+      inkDots.forEach((d) => d.classList.remove('active'));
+      dot.classList.add('active');
+      const inkColor = dot.dataset.ink;
+      document.documentElement.style.setProperty('--ink-color', inkColor);
+    });
+  });
+
+  // ========================================================
+  // 🔄 Reset All Parameters
+  // ========================================================
+  btnReset.addEventListener('click', () => {
+    sliderHolo.value = 45; valHolo.textContent = '45%';
+    sliderGlare.value = 35; valGlare.textContent = '35%';
+    sliderBrightness.value = 100; valBrightness.textContent = '100%';
+    sliderContrast.value = 105; valContrast.textContent = '105%';
+    sliderSaturation.value = 110; valSaturation.textContent = '110%';
+    sliderWarmth.value = 15; valWarmth.textContent = '15%';
+    sliderVignette.value = 30; valVignette.textContent = '30%';
+    sliderRadius.value = 4; valRadius.textContent = '4px';
+
+    document.documentElement.style.setProperty('--holo-opacity', 0.45);
+    document.documentElement.style.setProperty('--glare-opacity', 0.35);
+    document.documentElement.style.setProperty('--photo-brightness', 1);
+    document.documentElement.style.setProperty('--photo-contrast', 1.05);
+    document.documentElement.style.setProperty('--photo-saturation', 1.1);
+    document.documentElement.style.setProperty('--photo-warmth', 0.15);
+    document.documentElement.style.setProperty('--photo-vignette', 0.3);
+    document.documentElement.style.setProperty('--photo-radius', '4px');
+    document.documentElement.style.setProperty('--ink-color', '#1e293b');
+
+    // Reset style & paper & ink
+    styleBtns[0].click();
+    paperBtns[0].click();
+    inkDots[0].click();
   });
 
   // 3D Tilt & Light Physics
@@ -232,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // HD Polaroid Snapshot Exporter with Balanced Natural Glare
+  // HD Snapshot Exporter with Exact Tuned Parameters
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
     btnExport.textContent = '⏳ 高清生成中...';
@@ -248,10 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
       clone.style.transform = 'none';
       clone.style.borderRadius = '6px';
       clone.style.boxShadow = '0 12px 36px rgba(0,0,0,0.3)';
-      clone.style.background = '#fdfdfd';
       clone.style.padding = '16px 16px 0 16px';
       
-      // Inject ideal balanced natural lighting angles for export
       clone.style.setProperty('--rx', '4deg');
       clone.style.setProperty('--ry', '-6deg');
       clone.style.setProperty('--posx', '35%');
@@ -261,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const canvas = await html2canvas(clone, {
         backgroundColor: null,
-        scale: 3, // 3x Ultra HD
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         logging: false

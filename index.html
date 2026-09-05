@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Polaroid 3D · 3D 全息拍立得工坊</title>
+  <title>Polaroid Studio · 3D 全息拍立得工坊</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="theme-rainbow">
@@ -17,10 +17,11 @@
   <!-- Header -->
   <header class="app-header">
     <div class="logo">
-      <span class="logo-badge">POLAROID</span>
+      <span class="logo-badge">PRO STUDIO</span>
       <span class="logo-text">Holo<strong>Polaroid</strong></span>
     </div>
     <div class="header-actions">
+      <button id="btnReset" class="btn btn-secondary">↺ 重置参数</button>
       <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 悬浮展示</button>
       <button id="btnExport" class="btn btn-primary">📸 导出高清拍立得</button>
     </div>
@@ -28,16 +29,37 @@
 
   <!-- Main Container -->
   <main class="app-main">
-    <!-- Controls Panel -->
+    <!-- Controls Panel with Granular Sliders -->
     <aside class="controls-panel">
       <div class="panel-header">
-        <h2>📷 拍立得定制工坊</h2>
-        <p>经典复古白边相纸，融合 3D 物理悬浮与全息极光镀膜</p>
+        <h2>🛠️ 拍立得调色与光影控制台</h2>
+        <p>自由微调光影强度、胶片质感、相纸色温与手写笔迹</p>
       </div>
 
-      <!-- Theme / Shimmer Tone -->
+      <!-- 1. Photo Upload -->
       <section class="control-section">
-        <label class="section-label">✨ 胶片光影镀膜</label>
+        <label class="section-label">🖼️ 照片上传与预设</label>
+        <div class="upload-box" id="uploadDropzone">
+          <input type="file" id="imageInput" accept="image/*" class="file-input">
+          <div class="upload-content">
+            <span class="upload-icon">📂</span>
+            <span class="upload-text">点击或拖拽上传照片</span>
+            <span class="upload-hint">支持自拍、生活照、风景等任意图片</span>
+          </div>
+        </div>
+        <div class="preset-avatars">
+          <span>快速预设：</span>
+          <button class="preset-btn" data-preset="portrait">👤 人像</button>
+          <button class="preset-btn" data-preset="cat">🐱 橘猫</button>
+          <button class="preset-btn" data-preset="scenery">🌅 晚霞</button>
+        </div>
+      </section>
+
+      <!-- 2. Optical & Hologram Adjustments (Granular Sliders) -->
+      <section class="control-section">
+        <label class="section-label">✨ 全息光影与镀膜微调</label>
+        
+        <!-- Foil Hue Selector -->
         <div class="style-selector">
           <button class="style-btn active" data-style="rainbow">
             <span class="style-dot rainbow"></span>彩虹极光
@@ -48,43 +70,114 @@
           <button class="style-btn" data-style="cyber">
             <span class="style-dot cyber"></span>赛博霓虹
           </button>
-          <button class="style-btn" data-style="pure">
-            <span class="style-dot pure"></span>经典纯净
+          <button class="style-btn" data-style="golden">
+            <span class="style-dot golden"></span>流金璀璨
           </button>
         </div>
-      </section>
 
-      <!-- Avatar & Image Upload -->
-      <section class="control-section">
-        <label class="section-label">🖼️ 照片上传</label>
-        <div class="upload-box" id="uploadDropzone">
-          <input type="file" id="imageInput" accept="image/*" class="file-input">
-          <div class="upload-content">
-            <span class="upload-icon">📂</span>
-            <span class="upload-text">点击或拖拽上传照片</span>
-            <span class="upload-hint">支持自拍、生活照、风景或任意头像</span>
+        <!-- Sliders -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>全息镀膜强度</span>
+            <span class="slider-val" id="valHolo">45%</span>
           </div>
+          <input type="range" id="sliderHolo" min="0" max="100" value="45">
         </div>
 
-        <!-- Presets -->
-        <div class="preset-avatars">
-          <span>预设示例：</span>
-          <button class="preset-btn" data-preset="portrait">👤 人像摄影</button>
-          <button class="preset-btn" data-preset="cat">🐱 橘猫拍立得</button>
-          <button class="preset-btn" data-preset="scenery">🌅 富士山夕阳</button>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>胶片高光反光 (Glare)</span>
+            <span class="slider-val" id="valGlare">35%</span>
+          </div>
+          <input type="range" id="sliderGlare" min="0" max="100" value="35">
         </div>
       </section>
 
-      <!-- Polaroid Handwritten Caption & Date -->
+      <!-- 3. Film Color Grading Sliders -->
       <section class="control-section">
-        <label class="section-label">✍️ 拍立得手写小字</label>
+        <label class="section-label">🎞️ 胶片滤镜与影调调节</label>
+        
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>曝光亮度 (Brightness)</span>
+            <span class="slider-val" id="valBrightness">100%</span>
+          </div>
+          <input type="range" id="sliderBrightness" min="70" max="140" value="100">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>胶片对比度 (Contrast)</span>
+            <span class="slider-val" id="valContrast">105%</span>
+          </div>
+          <input type="range" id="sliderContrast" min="80" max="150" value="105">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>色彩饱和度 (Saturation)</span>
+            <span class="slider-val" id="valSaturation">110%</span>
+          </div>
+          <input type="range" id="sliderSaturation" min="0" max="200" value="110">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>复古色温 / 暖调 (Warmth)</span>
+            <span class="slider-val" id="valWarmth">15%</span>
+          </div>
+          <input type="range" id="sliderWarmth" min="0" max="100" value="15">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>暗角暗化 (Vignette)</span>
+            <span class="slider-val" id="valVignette">30%</span>
+          </div>
+          <input type="range" id="sliderVignette" min="0" max="100" value="30">
+        </div>
+      </section>
+
+      <!-- 4. Paper & Frame Customization -->
+      <section class="control-section">
+        <label class="section-label">📄 相纸材质与底色</label>
+        <div class="paper-buttons">
+          <button class="paper-btn active" data-paper="white" style="background:#fdfdfd;color:#1e293b;">经典纯白</button>
+          <button class="paper-btn" data-paper="cream" style="background:#fef7ea;color:#78350f;">复古暖米</button>
+          <button class="paper-btn" data-paper="pink" style="background:#fdf2f8;color:#831843;">落樱浅粉</button>
+          <button class="paper-btn" data-paper="black" style="background:#18181b;color:#f4f4f5;">曜石黑卡</button>
+        </div>
+
+        <div class="slider-group" style="margin-top: 8px;">
+          <div class="slider-header">
+            <span>照片框圆角</span>
+            <span class="slider-val" id="valRadius">4px</span>
+          </div>
+          <input type="range" id="sliderRadius" min="0" max="16" value="4">
+        </div>
+      </section>
+
+      <!-- 5. Handwritten Caption & Ink Color -->
+      <section class="control-section">
+        <label class="section-label">✍️ 拍立得手写签名</label>
         <div class="form-group">
-          <label>手写寄语 / 标题</label>
+          <label>手写寄语</label>
           <input type="text" id="inputCaption" value="Summer Vibes · 2026" maxlength="30">
         </div>
         <div class="form-group">
           <label>拍摄日期 / 地点</label>
           <input type="text" id="inputDate" value="2026.09.05 / Tokyo" maxlength="24">
+        </div>
+        
+        <div class="ink-color-row">
+          <span class="ink-label">笔墨颜色：</span>
+          <div class="ink-options">
+            <button class="ink-dot active" data-ink="#1e293b" style="background:#1e293b;" title="中性黑"></button>
+            <button class="ink-dot" data-ink="#1d4ed8" style="background:#1d4ed8;" title="钢笔蓝"></button>
+            <button class="ink-dot" data-ink="#be123c" style="background:#be123c;" title="复古红"></button>
+            <button class="ink-dot" data-ink="#d97706" style="background:#d97706;" title="金色油墨"></button>
+            <button class="ink-dot" data-ink="#f8fafc" style="background:#f8fafc;" title="白银油漆笔"></button>
+          </div>
         </div>
       </section>
     </aside>
@@ -92,27 +185,27 @@
     <!-- 3D Stage -->
     <section class="stage-container">
       <div class="stage-hint">
-        <span>✨ 晃动鼠标体验 3D 悬浮拍立得与胶片反光</span>
+        <span>✨ 晃动鼠标体验 3D 悬浮与实时参数渲染</span>
       </div>
 
       <!-- 3D Scene -->
       <div class="card-scene" id="cardScene">
         <!-- True Polaroid Frame Card -->
-        <div class="polaroid-card" id="polaroidCard">
+        <div class="polaroid-card paper-white" id="polaroidCard">
           
           <div class="polaroid-body">
             
             <!-- Dark Glossy Photo Area (Square / Classic 1:1 Aspect) -->
-            <div class="photo-pocket">
+            <div class="photo-pocket" id="photoPocket">
               <img id="polaroidImage" src="" alt="Polaroid Photo" crossorigin="anonymous">
               <!-- Internal Glare & Shimmer Layers (Strictly clipped to Photo Box) -->
-              <div class="film-glare"></div>
-              <div class="film-hologram"></div>
-              <div class="photo-shadow"></div>
+              <div class="film-glare" id="filmGlare"></div>
+              <div class="film-hologram" id="filmHologram"></div>
+              <div class="photo-vignette" id="photoVignette"></div>
             </div>
 
             <!-- Bottom Classic White Chin for Handwritten Text -->
-            <div class="polaroid-chin">
+            <div class="polaroid-chin" id="polaroidChin">
               <div class="handwritten-caption" id="displayCaption">Summer Vibes · 2026</div>
               <div class="handwritten-date" id="displayDate">2026.09.05 / Tokyo</div>
             </div>
