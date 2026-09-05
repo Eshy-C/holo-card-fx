@@ -1,5 +1,5 @@
 /**
- * HoloCard FX - 3D Interactive Holographic Card Engine
+ * HoloCard FX - 3D Interactive Holographic Card Engine & Sound Synthesizer
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,14 +36,108 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardImage = document.getElementById('cardImage');
   const uploadDropzone = document.getElementById('uploadDropzone');
   
-  // Buttons
+  // Toggles & Actions
+  const togglePopout = document.getElementById('togglePopout');
+  const btnSoundToggle = document.getElementById('btnSoundToggle');
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnRandom = document.getElementById('btnRandom');
   const btnExport = document.getElementById('btnExport');
   const styleBtns = document.querySelectorAll('.style-btn');
+  const filterBtns = document.querySelectorAll('.filter-btn');
   const presetBtns = document.querySelectorAll('.preset-btn');
 
   let isAutoSpinning = false;
+  let isSoundEnabled = true;
+
+  // ========================================================
+  // 🔊 Web Audio API Synthesizer (Crystal Chimes & SSR Sparkles)
+  // ========================================================
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        audioCtx = new AudioContext();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  let lastSoundTime = 0;
+  function playShimmerSound(speedFactor = 1) {
+    if (!isSoundEnabled) return;
+    const now = performance.now();
+    if (now - lastSoundTime < 80) return; // throttle audio rate
+    lastSoundTime = now;
+
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      // High-pitched crystal frequency (1200Hz - 2400Hz)
+      const baseFreq = 1400 + Math.random() * 800;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq + 400 * speedFactor, ctx.currentTime + 0.08);
+
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+      filter.Q.setValueAtTime(8, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.13);
+    } catch (e) {
+      // AudioContext policy fallback
+    }
+  }
+
+  function playSSRChime() {
+    if (!isSoundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+    notes.forEach((freq, idx) => {
+      setTimeout(() => {
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.45);
+        } catch (e) {}
+      }, idx * 60);
+    });
+  }
+
+  // Sound Toggle Button
+  btnSoundToggle.addEventListener('click', () => {
+    isSoundEnabled = !isSoundEnabled;
+    btnSoundToggle.textContent = isSoundEnabled ? '🔊 音效: 开' : '🔇 音效: 关';
+    btnSoundToggle.style.color = isSoundEnabled ? '#e2e8f0' : '#94a3b8';
+    if (isSoundEnabled) getAudioContext();
+  });
 
   // Preset Images
   const presets = {
@@ -70,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. 3D Tilt & Holographic Foil Physics Engine
   let bounds;
+  let lastX = 0, lastY = 0;
   function updateBounds() {
     bounds = holoCard.getBoundingClientRect();
   }
@@ -87,6 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updateBounds();
     const mouseX = clientX - bounds.left;
     const mouseY = clientY - bounds.top;
+
+    // Movement speed for audio trigger
+    const deltaX = Math.abs(clientX - lastX);
+    const deltaY = Math.abs(clientY - lastY);
+    const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    lastX = clientX;
+    lastY = clientY;
+
+    if (speed > 8) {
+      playShimmerSound(Math.min(speed / 20, 2));
+    }
 
     const left = mouseX;
     const top = mouseY;
@@ -129,23 +235,50 @@ document.addEventListener('DOMContentLoaded', () => {
   cardScene.addEventListener('touchmove', handlePointerMove);
   cardScene.addEventListener('touchend', handlePointerLeave);
 
-  // 3. Theme / Foil Texture Switching
+  // 3. 3D Pop-out Toggle
+  togglePopout.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      holoCard.classList.add('popout-enabled');
+    } else {
+      holoCard.classList.remove('popout-enabled');
+    }
+  });
+
+  // 4. Avatar Blend Filters
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      
+      // Update body filter class
+      document.body.classList.remove('filter-normal', 'filter-cyber', 'filter-gold', 'filter-holo', 'filter-dither');
+      document.body.classList.add(`filter-${filter}`);
+      playShimmerSound(1.5);
+    });
+  });
+
+  // 5. Theme / Foil Texture Switching
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       const style = btn.dataset.style;
-      document.body.className = `theme-${style}`;
+      
+      const currentFilter = Array.from(document.body.classList).find(c => c.startsWith('filter-')) || 'filter-normal';
+      document.body.className = `theme-${style} ${currentFilter}`;
+      playSSRChime();
     });
   });
 
-  // 4. Image Upload & Drag-and-Drop
+  // 6. Image Upload & Drag-and-Drop
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
         cardImage.src = event.target.result;
+        playSSRChime();
       };
       reader.readAsDataURL(file);
     }
@@ -171,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         cardImage.src = event.target.result;
+        playSSRChime();
       };
       reader.readAsDataURL(file);
     }
@@ -182,11 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const preset = btn.dataset.preset;
       if (presets[preset]) {
         cardImage.src = presets[preset];
+        playShimmerSound(1.2);
       }
     });
   });
 
-  // 5. 🎥 Auto-Spin Video Recording Mode
+  // 7. 🎥 Auto-Spin Video Recording Mode
   btnAutoSpin.addEventListener('click', () => {
     isAutoSpinning = !isAutoSpinning;
     if (isAutoSpinning) {
@@ -196,14 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
       btnAutoSpin.classList.remove('btn-secondary');
     } else {
       holoCard.classList.remove('auto-spinning');
-      btnAutoSpin.textContent = '🎥 自动巡航展示';
+      btnAutoSpin.textContent = '🎥 360° 巡航';
       btnAutoSpin.classList.remove('btn-primary');
       btnAutoSpin.classList.add('btn-secondary');
       handlePointerLeave();
     }
   });
 
-  // 6. 🎲 Randomizer for Fun Stats
+  // 8. 🎲 Randomizer for Fun Stats
   const randomPool = [
     {
       name: 'Kai · 赛博炼金术士',
@@ -214,10 +349,11 @@ document.addEventListener('DOMContentLoaded', () => {
       atk: 9900,
       skill: '超弦并发协议 (Hyper-Thread)',
       desc: '一次性调度 1024 个后台 Agent，在内存溢出前瞬间吞噬整个业务需求。',
-      style: 'cosmic'
+      style: 'cosmic',
+      filter: 'cyber'
     },
     {
-      name: '极客猫咪 · 降维打击',
+      name: '量子猫咪 · 降维打击',
       rarity: 'SSR · LEGEND',
       type: '🔮 Python / Void',
       number: `NO. ${Math.floor(Math.random() * 900 + 100)} / 999`,
@@ -225,7 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
       atk: 10800,
       skill: '踩踏物理键盘 (Cat On Keyboard)',
       desc: '用肉垫优雅地按下一串随机字符并强制 git push -f 到 main 主分支。',
-      style: 'cyber'
+      style: 'cyber',
+      filter: 'holo'
     },
     {
       name: '黄金架构师 · 零 Bug 领域',
@@ -236,7 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
       atk: 14500,
       skill: '垃圾回收结界 (Full GC Buster)',
       desc: '在毫秒间清空所有技术债务，让服务器 CPU 利用率恒定在最优雅的 42%。',
-      style: 'gold'
+      style: 'gold',
+      filter: 'gold'
     },
     {
       name: '时空碎钻 · 极光幻影',
@@ -247,7 +385,8 @@ document.addEventListener('DOMContentLoaded', () => {
       atk: 8900,
       skill: '视差全息棱镜 (Prism Refraction)',
       desc: '折射出五彩斑斓的黑与流光溢彩的白，直接震撼产品经理的视觉审美。',
-      style: 'diamond'
+      style: 'diamond',
+      filter: 'dither'
     }
   ];
 
@@ -278,12 +417,17 @@ document.addEventListener('DOMContentLoaded', () => {
     inputSkillDesc.value = item.desc;
     displaySkillDesc.textContent = item.desc;
 
-    // Trigger Style Click
+    // Trigger Style & Filter
     const targetStyleBtn = document.querySelector(`.style-btn[data-style="${item.style}"]`);
     if (targetStyleBtn) targetStyleBtn.click();
+
+    const targetFilterBtn = document.querySelector(`.filter-btn[data-filter="${item.filter}"]`);
+    if (targetFilterBtn) targetFilterBtn.click();
+
+    playSSRChime();
   });
 
-  // 7. 📸 Card Snapshot Export
+  // 9. 📸 Card Snapshot Export
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
     btnExport.textContent = '⏳ 生成中...';

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HoloCard FX · 3D 全息闪卡生成器</title>
+  <title>HoloCard FX · 3D 全息闪卡工坊</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body class="theme-cosmic">
+<body class="theme-cosmic filter-normal">
   <div class="bg-glow"></div>
   <div class="bg-grid"></div>
 
@@ -21,8 +21,9 @@
       <span class="logo-text">HoloCard<strong>Studio</strong></span>
     </div>
     <div class="header-actions">
+      <button id="btnSoundToggle" class="btn btn-secondary" title="切换音效">🔊 音效: 开</button>
       <button id="btnRandom" class="btn btn-secondary">🎲 随机属性</button>
-      <button id="btnAutoSpin" class="btn btn-secondary">🎥 自动巡航展示</button>
+      <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 巡航</button>
       <button id="btnExport" class="btn btn-primary">📸 导出高清卡片</button>
     </div>
   </header>
@@ -33,7 +34,7 @@
     <aside class="controls-panel">
       <div class="panel-header">
         <h2>🛠️ 卡牌定制工坊</h2>
-        <p>定制你的专属 3D 全息特卡，支持鼠标实时互动与光影折射</p>
+        <p>支持 3D 破框深度、头像艺术融合与全息光影合成</p>
       </div>
 
       <!-- Theme / Foil Texture -->
@@ -55,22 +56,50 @@
         </div>
       </section>
 
-      <!-- Avatar & Image Upload -->
+      <!-- Avatar & Image Upload & Fusion Filters -->
       <section class="control-section">
-        <label class="section-label">🖼️ 卡片主图 / 头像</label>
+        <label class="section-label">🖼️ 头像上传与艺术融合</label>
         <div class="upload-box" id="uploadDropzone">
           <input type="file" id="imageInput" accept="image/*" class="file-input">
           <div class="upload-content">
             <span class="upload-icon">📂</span>
             <span class="upload-text">点击或拖拽图片到此处</span>
-            <span class="upload-hint">支持 PNG, JPG, WebP / 自动居中裁切</span>
+            <span class="upload-hint">支持各种自拍、插画或头像图片</span>
           </div>
         </div>
+
+        <!-- Blend Filter Modes -->
+        <div class="filter-selector-group">
+          <span class="sub-label">🎨 头像艺术融合滤镜：</span>
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="normal">原图</button>
+            <button class="filter-btn" data-filter="cyber">👾 赛博双色</button>
+            <button class="filter-btn" data-filter="gold">🪙 烫金浮雕</button>
+            <button class="filter-btn" data-filter="holo">🔮 全息幽灵</button>
+            <button class="filter-btn" data-filter="dither">🕹️ 复古点阵</button>
+          </div>
+        </div>
+
+        <!-- Preset Avatars -->
         <div class="preset-avatars">
           <span>预设头像：</span>
           <button class="preset-btn" data-preset="agent">🤖 赛博 Agent</button>
           <button class="preset-btn" data-preset="cat">🐱 量子猫</button>
           <button class="preset-btn" data-preset="dragon">🐉 霓虹龙</button>
+        </div>
+      </section>
+
+      <!-- 3D Pop-out Setting -->
+      <section class="control-section">
+        <div class="toggle-row">
+          <div>
+            <label class="section-label">💥 3D 破框立体视差</label>
+            <p class="toggle-hint">开启后角色头像与光效将悬浮于卡牌表面</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="togglePopout" checked>
+            <span class="slider round"></span>
+          </label>
         </div>
       </section>
 
@@ -144,23 +173,23 @@
     <!-- Right: 3D Stage -->
     <section class="stage-container">
       <div class="stage-hint">
-        <span>💡 晃动鼠标体验 3D 悬浮与镭射全息反光</span>
+        <span>✨ 晃动鼠标体验 3D 破框悬浮与晶体全息反光</span>
       </div>
 
       <!-- 3D Card Scene -->
       <div class="card-scene" id="cardScene">
-        <div class="holo-card" id="holoCard">
+        <div class="holo-card popout-enabled" id="holoCard">
           
           <!-- Holographic Shimmer Overlays -->
           <div class="layer-foil"></div>
           <div class="layer-glare"></div>
           <div class="layer-sparkles"></div>
 
-          <!-- Card Content Body -->
+          <!-- Card Content Body (Multi-layer 3D Depth) -->
           <div class="card-inner">
             
-            <!-- Card Header -->
-            <div class="card-top-bar">
+            <!-- Card Header (Floating Layer) -->
+            <div class="card-top-bar float-layer">
               <div class="card-name-group">
                 <span class="card-badge" id="displayType">⚡ AI / Compute</span>
                 <h3 class="card-name" id="displayName">Kai · Agent 架构师</h3>
@@ -171,15 +200,17 @@
               </div>
             </div>
 
-            <!-- Card Artwork Frame -->
-            <div class="card-art-box">
-              <img id="cardImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Card Artwork" crossorigin="anonymous">
+            <!-- Card Artwork Frame (High 3D Pop-out Layer) -->
+            <div class="card-art-box popout-target">
+              <div class="art-img-wrapper" id="artWrapper">
+                <img id="cardImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Card Artwork" crossorigin="anonymous">
+              </div>
               <div class="art-overlay"></div>
-              <div class="rarity-seal" id="displayRarity">UR · SECRET</div>
+              <div class="rarity-seal float-layer-seal" id="displayRarity">UR · SECRET</div>
             </div>
 
             <!-- Card Middle Stat Bar -->
-            <div class="card-mid-bar">
+            <div class="card-mid-bar float-layer">
               <div class="number-tag" id="displayNumber">NO. 007 / 999</div>
               <div class="atk-tag">
                 <span>ATK</span>
@@ -188,7 +219,7 @@
             </div>
 
             <!-- Card Bottom: Skill & Lore -->
-            <div class="card-bottom-info">
+            <div class="card-bottom-info float-layer">
               <div class="skill-title-row">
                 <span class="skill-icon">⚡</span>
                 <h4 class="skill-name" id="displaySkillName">多智能体共鸣 (Multi-Agent Swarm)</h4>
