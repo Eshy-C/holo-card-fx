@@ -21,6 +21,7 @@
       <span class="logo-text">Holo<strong>Polaroid</strong></span>
     </div>
     <div class="header-actions">
+      <button id="btnAutoDemo" class="btn btn-demo" title="全自动模拟鼠标轨迹与功能演示，适合录屏">✨ 自动演示录屏</button>
       <button id="btnReset" class="btn btn-secondary">↺ 重置参数</button>
       <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 悬浮展示</button>
       <button id="btnExport" class="btn btn-primary">📸 导出高清拍立得</button>
@@ -309,7 +310,12 @@
 
       </div>
     </section>
-  </main>
+  <div id="virtualCursor">
+    <svg class="cursor-arrow" viewBox="0 0 24 24">
+      <path d="M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 5.429v-20.55z" />
+    </svg>
+    <div class="cursor-click-wave"></div>
+  </div>
 
   <script src="app.js"></script>
 </body>
