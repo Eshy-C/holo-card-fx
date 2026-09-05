@@ -1,20 +1,18 @@
 :root {
-  --bg-dark: #090a10;
+  --bg-dark: #0b0d14;
   --panel-bg: rgba(18, 20, 32, 0.75);
   --panel-border: rgba(255, 255, 255, 0.1);
   --text-main: #f0f3ff;
   --text-muted: #8c93b0;
   --primary: #6366f1;
-  --primary-glow: rgba(99, 102, 241, 0.4);
   
-  /* Dynamic 3D & Foil CSS Variables (manipulated by JS) */
+  /* 3D variables */
   --rx: 0deg;
   --ry: 0deg;
   --mx: 50%;
   --my: 50%;
   --posx: 50%;
   --posy: 50%;
-  --foil-opacity: 0.85;
 }
 
 * {
@@ -34,28 +32,27 @@ body {
   flex-direction: column;
 }
 
-/* Background Ambient Glow */
+/* Ambient Background */
 .bg-glow {
   position: fixed;
-  top: 20%;
-  left: 50%;
+  top: 30%;
+  left: 55%;
   transform: translate(-50%, -50%);
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(236, 72, 153, 0.12) 45%, transparent 70%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(236, 72, 153, 0.08) 50%, transparent 70%);
   filter: blur(80px);
   z-index: 0;
   pointer-events: none;
-  transition: all 0.5s ease;
 }
 
 .bg-grid {
   position: fixed;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 36px 36px;
   z-index: 0;
   pointer-events: none;
 }
@@ -69,7 +66,7 @@ body {
   align-items: center;
   padding: 16px 36px;
   border-bottom: 1px solid var(--panel-border);
-  background: rgba(9, 10, 16, 0.8);
+  background: rgba(11, 13, 20, 0.85);
   backdrop-filter: blur(12px);
 }
 
@@ -82,53 +79,50 @@ body {
 .logo-badge {
   font-size: 11px;
   font-weight: 800;
-  padding: 3px 7px;
+  padding: 3px 8px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  background: #f43f5e;
   color: #fff;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .logo-text {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: -0.5px;
 }
-
 .logo-text strong {
-  color: #818cf8;
-  font-weight: 800;
+  color: #f43f5e;
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 /* Buttons */
 .btn {
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 10px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
   color: #fff;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
 }
 
 .btn-secondary {
@@ -136,7 +130,6 @@ body {
   color: #e2e8f0;
   border-color: rgba(255, 255, 255, 0.12);
 }
-
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
@@ -148,16 +141,16 @@ body {
   z-index: 5;
   display: flex;
   flex: 1;
-  max-width: 1400px;
+  max-width: 1300px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px;
-  gap: 32px;
+  padding: 28px;
+  gap: 36px;
 }
 
 /* Controls Panel */
 .controls-panel {
-  width: 440px;
+  width: 420px;
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 20px;
@@ -165,17 +158,9 @@ body {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
-}
-
-.controls-panel::-webkit-scrollbar {
-  width: 6px;
-}
-.controls-panel::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
 }
 
 .panel-header h2 {
@@ -183,7 +168,6 @@ body {
   font-weight: 700;
   margin-bottom: 4px;
 }
-
 .panel-header p {
   font-size: 12px;
   color: var(--text-muted);
@@ -200,7 +184,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #a5b4fc;
+  color: #fda4af;
 }
 
 /* Style Selector */
@@ -230,10 +214,10 @@ body {
 }
 
 .style-btn.active {
-  background: rgba(99, 102, 241, 0.18);
-  border-color: #818cf8;
+  background: rgba(244, 63, 94, 0.15);
+  border-color: #f43f5e;
   color: #fff;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.25);
 }
 
 .style-dot {
@@ -241,17 +225,17 @@ body {
   height: 12px;
   border-radius: 50%;
 }
-.style-dot.cosmic { background: linear-gradient(135deg, #ff0080, #7928ca, #00dfd8); }
-.style-dot.gold { background: linear-gradient(135deg, #ffd700, #ff8c00, #b8860b); }
+.style-dot.rainbow { background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0); }
+.style-dot.sunset { background: linear-gradient(135deg, #ff7e5f, #feb47b, #ff2a6d); }
 .style-dot.cyber { background: linear-gradient(135deg, #00f0ff, #ff0055, #00ff66); }
-.style-dot.diamond { background: linear-gradient(135deg, #e0f2fe, #38bdf8, #c084fc); }
+.style-dot.pure { background: #ffffff; border: 1px solid #cbd5e1; }
 
 /* Upload Box */
 .upload-box {
   position: relative;
   border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: 14px;
-  padding: 14px;
+  padding: 16px;
   text-align: center;
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -259,8 +243,8 @@ body {
 }
 
 .upload-box:hover {
-  border-color: #818cf8;
-  background: rgba(99, 102, 241, 0.05);
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.05);
 }
 
 .file-input {
@@ -277,52 +261,9 @@ body {
   gap: 3px;
 }
 
-.upload-icon { font-size: 22px; }
+.upload-icon { font-size: 24px; }
 .upload-text { font-size: 13px; font-weight: 600; }
 .upload-hint { font-size: 11px; color: var(--text-muted); }
-
-/* Filter Buttons */
-.filter-selector-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.sub-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.filter-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #cbd5e1;
-  padding: 5px 9px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.filter-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-}
-
-.filter-btn.active {
-  background: rgba(99, 102, 241, 0.25);
-  border-color: #818cf8;
-  color: #fff;
-}
 
 .preset-avatars {
   display: flex;
@@ -338,7 +279,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   color: #cbd5e1;
-  padding: 3px 7px;
+  padding: 3px 8px;
   font-size: 11px;
   cursor: pointer;
   transition: 0.2s;
@@ -348,11 +289,17 @@ body {
   color: #fff;
 }
 
-/* Form Fields */
+/* Form Inputs */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 input[type="text"] {
@@ -368,7 +315,7 @@ input[type="text"] {
 }
 
 input:focus {
-  border-color: #818cf8;
+  border-color: #f43f5e;
 }
 
 /* Right Stage */
@@ -382,275 +329,201 @@ input:focus {
 }
 
 .stage-hint {
-  margin-bottom: 20px;
-  font-size: 12.5px;
+  margin-bottom: 24px;
+  font-size: 13px;
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.05);
   padding: 6px 16px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  text-align: center;
 }
 
-/* 3D Scene */
 .card-scene {
   perspective: 1200px;
-  padding: 40px;
-  position: relative;
-}
-
-/* Canvas Particle Overlay */
-.particle-canvas {
-  position: absolute;
-  inset: -100px;
-  width: calc(100% + 200px);
-  height: calc(100% + 200px);
-  pointer-events: none;
-  z-index: 10;
+  padding: 30px;
 }
 
 /* =======================================================
-   🎴 PURE CLEAN HOLOGRAPHIC CARD
+   📸 AUTHENTIC 3D POLAROID PHOTO
    ======================================================= */
-.holo-card {
+.polaroid-card {
   position: relative;
-  width: 340px;
-  height: 480px;
-  border-radius: 24px;
-  background: #111422;
+  width: 330px;
+  height: 410px;
+  background: #fdfdfd;
+  border-radius: 8px;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.8),
-    0 0 35px var(--card-glow, rgba(99, 102, 241, 0.25));
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+    0 25px 50px -12px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(255, 255, 255, 0.1);
   transform-style: preserve-3d;
   transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease;
   cursor: grab;
   user-select: none;
   overflow: hidden;
+  padding: 16px 16px 0 16px;
+  display: flex;
+  flex-direction: column;
 }
 
-.holo-card.auto-spinning {
-  animation: cardFloat 6s ease-in-out infinite;
+.polaroid-card.auto-spinning {
+  animation: polaroidFloat 6s ease-in-out infinite;
 }
 
-@keyframes cardFloat {
-  0% { transform: rotateX(12deg) rotateY(-18deg) translateY(-8px); }
-  25% { transform: rotateX(-10deg) rotateY(-12deg) translateY(4px); }
-  50% { transform: rotateX(-14deg) rotateY(18deg) translateY(-6px); }
-  75% { transform: rotateX(8deg) rotateY(14deg) translateY(6px); }
-  100% { transform: rotateX(12deg) rotateY(-18deg) translateY(-8px); }
+@keyframes polaroidFloat {
+  0% { transform: rotateX(10deg) rotateY(-14deg) translateY(-6px); }
+  25% { transform: rotateX(-8deg) rotateY(-10deg) translateY(4px); }
+  50% { transform: rotateX(-12deg) rotateY(14deg) translateY(-4px); }
+  75% { transform: rotateX(6deg) rotateY(10deg) translateY(6px); }
+  100% { transform: rotateX(10deg) rotateY(-14deg) translateY(-6px); }
 }
 
-/* Card Content Frame */
-.card-frame-content {
+.polaroid-body {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
   z-index: 1;
 }
 
-/* Main Framed Avatar Box */
-.card-avatar-box {
+/* Square Photo Pocket */
+.photo-pocket {
   position: relative;
-  width: 100%;
-  height: 390px;
-  border-radius: 18px;
+  width: 298px;
+  height: 298px;
+  background: #111;
+  border-radius: 3px;
   overflow: hidden;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.4);
-  background: #000;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.35);
 }
 
-.art-img-wrapper {
-  width: 100%;
-  height: 100%;
-  transition: filter 0.3s ease;
-}
-
-.card-avatar-box img {
+.photo-pocket img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-/* Minimal Name Caption */
-.card-clean-caption {
-  width: 100%;
-  text-align: center;
-  padding-top: 10px;
-  padding-bottom: 2px;
+.photo-shadow {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.25);
+  pointer-events: none;
 }
 
-.card-clean-caption span {
-  font-size: 15px;
+/* Classic Bottom Chin */
+.polaroid-chin {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 2px;
+}
+
+.handwritten-caption {
+  font-family: 'Caveat', cursive;
+  font-size: 23px;
   font-weight: 700;
-  color: #fff;
+  color: #1e293b;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  text-align: center;
+  line-height: 1.1;
+  transform: rotate(-0.5deg);
 }
 
-/* Avatar Fusion Filters */
-.filter-cyber .art-img-wrapper {
-  filter: contrast(140%) saturate(180%) hue-rotate(170deg) drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
-}
-.filter-gold .art-img-wrapper {
-  filter: sepia(100%) contrast(150%) brightness(110%) saturate(220%) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
-}
-.filter-holo .art-img-wrapper {
-  filter: invert(15%) contrast(180%) hue-rotate(270deg) brightness(120%);
-  mix-blend-mode: screen;
-}
-.filter-dither .art-img-wrapper {
-  filter: grayscale(100%) contrast(250%) brightness(105%);
+.handwritten-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 1px;
 }
 
 /* =======================================================
-   🌟 HOLOGRAPHIC FOIL & SHIMMER LAYERS
+   ✨ GLOSS & HOLOGRAPHIC COATING
    ======================================================= */
-
-.layer-foil {
+.film-glare {
   position: absolute;
-  inset: 0;
-  border-radius: 24px;
-  z-index: 2;
-  pointer-events: none;
-  mix-blend-mode: color-dodge;
-  opacity: var(--foil-opacity);
-  transition: opacity 0.3s ease;
-}
-
-/* Cosmic Prismatic Theme */
-.theme-cosmic .layer-foil {
-  background: 
-    linear-gradient(
-      calc(var(--rx) * 3 + 115deg),
-      rgba(255, 0, 128, 0.8) 0%,
-      rgba(255, 140, 0, 0.8) 20%,
-      rgba(64, 224, 208, 0.8) 40%,
-      rgba(123, 104, 238, 0.8) 60%,
-      rgba(255, 0, 128, 0.8) 80%,
-      rgba(64, 224, 208, 0.8) 100%
-    ),
-    radial-gradient(
-      circle at var(--mx) var(--my),
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(255, 255, 255, 0.2) 30%,
-      transparent 70%
-    );
-  background-size: 200% 200%, 100% 100%;
-  background-position: var(--posx) var(--posy), center;
-}
-
-/* Gold Theme */
-.theme-gold .layer-foil {
-  background: 
-    linear-gradient(
-      calc(var(--rx) * 2 + 135deg),
-      rgba(255, 215, 0, 0.9) 0%,
-      rgba(255, 248, 220, 0.4) 25%,
-      rgba(218, 165, 32, 0.9) 50%,
-      rgba(255, 235, 160, 0.8) 75%,
-      rgba(255, 215, 0, 0.9) 100%
-    ),
-    radial-gradient(
-      circle at var(--mx) var(--my),
-      rgba(255, 255, 220, 0.9) 0%,
-      transparent 60%
-    );
-  background-size: 220% 220%, 100% 100%;
-  background-position: var(--posx) var(--posy), center;
-}
-.theme-gold .holo-card {
-  --card-glow: rgba(255, 215, 0, 0.3);
-  border-color: rgba(255, 215, 0, 0.35);
-}
-
-/* Cyber Neon Theme */
-.theme-cyber .layer-foil {
-  background: 
-    linear-gradient(
-      calc(var(--ry) * 3 + 45deg),
-      rgba(0, 240, 255, 0.9) 0%,
-      rgba(255, 0, 85, 0.9) 35%,
-      rgba(0, 255, 102, 0.9) 70%,
-      rgba(0, 240, 255, 0.9) 100%
-    ),
-    radial-gradient(
-      circle at var(--mx) var(--my),
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 50%
-    );
-  background-size: 250% 250%, 100% 100%;
-  background-position: var(--posx) var(--posy), center;
-}
-.theme-cyber .holo-card {
-  --card-glow: rgba(0, 240, 255, 0.35);
-  border-color: rgba(0, 240, 255, 0.4);
-}
-
-/* Diamond Crystal Theme */
-.theme-diamond .layer-foil {
-  background: 
-    repeating-linear-gradient(
-      calc(var(--rx) * 2 + 60deg),
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(147, 197, 253, 0.5) 15%,
-      rgba(232, 121, 249, 0.5) 30%,
-      rgba(255, 255, 255, 0.6) 45%
-    ),
-    radial-gradient(
-      circle at var(--mx) var(--my),
-      rgba(255, 255, 255, 0.95) 0%,
-      transparent 55%
-    );
-  background-size: 180% 180%, 100% 100%;
-  background-position: var(--posx) var(--posy), center;
-}
-.theme-diamond .holo-card {
-  --card-glow: rgba(147, 197, 253, 0.4);
-  border-color: rgba(224, 242, 254, 0.45);
-}
-
-/* 2. Glare Reflection Layer */
-.layer-glare {
-  position: absolute;
-  inset: 0;
-  border-radius: 24px;
+  top: 16px;
+  left: 16px;
+  width: 298px;
+  height: 298px;
+  border-radius: 3px;
   z-index: 3;
   pointer-events: none;
-  background: radial-gradient(
-    circle at var(--mx) var(--my),
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 255, 255, 0.15) 25%,
+  background: linear-gradient(
+    calc(var(--rx) * 2 + 135deg),
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
     transparent 60%
   );
-  mix-blend-mode: overlay;
-  opacity: 0.9;
+  mix-blend-mode: screen;
 }
 
-/* 3. Sparkle Glitters Layer */
-.layer-sparkles {
+.film-hologram {
   position: absolute;
-  inset: 0;
-  border-radius: 24px;
+  top: 16px;
+  left: 16px;
+  width: 298px;
+  height: 298px;
+  border-radius: 3px;
   z-index: 4;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.8) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: var(--posx) var(--posy);
   mix-blend-mode: color-dodge;
-  opacity: 0.35;
+  opacity: 0.55;
+  transition: opacity 0.3s;
+}
+
+/* Theme 1: Rainbow Holographic */
+.theme-rainbow .film-hologram {
+  background: 
+    linear-gradient(
+      calc(var(--rx) * 3 + 120deg),
+      rgba(255, 0, 128, 0.7) 0%,
+      rgba(255, 140, 0, 0.7) 25%,
+      rgba(64, 224, 208, 0.7) 50%,
+      rgba(123, 104, 238, 0.7) 75%,
+      rgba(255, 0, 128, 0.7) 100%
+    );
+  background-size: 200% 200%;
+  background-position: var(--posx) var(--posy);
+}
+
+/* Theme 2: Sunset Glow */
+.theme-sunset .film-hologram {
+  background: 
+    linear-gradient(
+      calc(var(--rx) * 2 + 45deg),
+      rgba(255, 126, 95, 0.8) 0%,
+      rgba(254, 180, 123, 0.7) 50%,
+      rgba(255, 42, 109, 0.8) 100%
+    );
+  background-size: 200% 200%;
+  background-position: var(--posx) var(--posy);
+}
+
+/* Theme 3: Cyberpunk */
+.theme-cyber .film-hologram {
+  background: 
+    linear-gradient(
+      calc(var(--ry) * 3 + 90deg),
+      rgba(0, 240, 255, 0.8) 0%,
+      rgba(255, 0, 85, 0.8) 50%,
+      rgba(0, 255, 102, 0.8) 100%
+    );
+  background-size: 200% 200%;
+  background-position: var(--posx) var(--posy);
+}
+
+/* Theme 4: Pure (Zero Holo Coating) */
+.theme-pure .film-hologram {
+  display: none;
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 860px) {
   .app-main {
     flex-direction: column;
     padding: 16px;

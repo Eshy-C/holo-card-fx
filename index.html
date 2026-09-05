@@ -3,132 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>HoloCard FX · 3D 全息头像生成器</title>
+  <title>Polaroid 3D · 3D 全息拍立得工坊</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body class="theme-cosmic filter-normal">
+<body class="theme-rainbow">
   <div class="bg-glow"></div>
   <div class="bg-grid"></div>
 
   <!-- Header -->
   <header class="app-header">
     <div class="logo">
-      <span class="logo-badge">3D FX</span>
-      <span class="logo-text">HoloCard<strong>Studio</strong></span>
+      <span class="logo-badge">POLAROID</span>
+      <span class="logo-text">Holo<strong>Polaroid</strong></span>
     </div>
     <div class="header-actions">
-      <button id="btnSoundToggle" class="btn btn-secondary" title="切换音效">🔊 音效: 开</button>
-      <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 巡航</button>
-      <button id="btnExport" class="btn btn-primary">📸 导出高清卡片</button>
+      <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 悬浮展示</button>
+      <button id="btnExport" class="btn btn-primary">📸 导出高清拍立得</button>
     </div>
   </header>
 
   <!-- Main Container -->
   <main class="app-main">
-    <!-- Left Sidebar: Controls -->
+    <!-- Controls Panel -->
     <aside class="controls-panel">
       <div class="panel-header">
-        <h2>✨ 全息头像工坊</h2>
-        <p>上传头像或照片，生成带有流光溢彩与 3D 悬浮质感的专属全息卡</p>
+        <h2>📷 拍立得定制工坊</h2>
+        <p>经典复古白边相纸，融合 3D 物理悬浮与全息极光镀膜</p>
       </div>
 
-      <!-- Theme / Foil Texture -->
+      <!-- Theme / Shimmer Tone -->
       <section class="control-section">
-        <label class="section-label">✨ 全息材质风格</label>
+        <label class="section-label">✨ 全息光影镀膜</label>
         <div class="style-selector">
-          <button class="style-btn active" data-style="cosmic">
-            <span class="style-dot cosmic"></span>极光星空
+          <button class="style-btn active" data-style="rainbow">
+            <span class="style-dot rainbow"></span>彩虹极光
           </button>
-          <button class="style-btn" data-style="gold">
-            <span class="style-dot gold"></span>重工烫金
+          <button class="style-btn" data-style="sunset">
+            <span class="style-dot sunset"></span>落日霞光
           </button>
           <button class="style-btn" data-style="cyber">
             <span class="style-dot cyber"></span>赛博霓虹
           </button>
-          <button class="style-btn" data-style="diamond">
-            <span class="style-dot diamond"></span>碎钻水晶
+          <button class="style-btn" data-style="pure">
+            <span class="style-dot pure"></span>经典纯净
           </button>
         </div>
       </section>
 
-      <!-- Avatar & Image Upload & Fusion Filters -->
+      <!-- Avatar & Image Upload -->
       <section class="control-section">
-        <label class="section-label">🖼️ 头像上传与滤镜</label>
+        <label class="section-label">🖼️ 照片上传</label>
         <div class="upload-box" id="uploadDropzone">
           <input type="file" id="imageInput" accept="image/*" class="file-input">
           <div class="upload-content">
             <span class="upload-icon">📂</span>
-            <span class="upload-text">点击或拖拽上传你的照片 / 头像</span>
-            <span class="upload-hint">支持自拍、宠物、AI 插画等任意图片</span>
+            <span class="upload-text">点击或拖拽上传照片</span>
+            <span class="upload-hint">支持自拍、生活照、风景或任意头像</span>
           </div>
         </div>
 
-        <!-- Blend Filter Modes -->
-        <div class="filter-selector-group">
-          <span class="sub-label">🎨 头像滤镜风格：</span>
-          <div class="filter-buttons">
-            <button class="filter-btn active" data-filter="normal">原图</button>
-            <button class="filter-btn" data-filter="cyber">👾 赛博双色</button>
-            <button class="filter-btn" data-filter="gold">🪙 烫金浮雕</button>
-            <button class="filter-btn" data-filter="holo">🔮 全息幽灵</button>
-            <button class="filter-btn" data-filter="dither">🕹️ 复古点阵</button>
-          </div>
-        </div>
-
-        <!-- Preset Avatars -->
+        <!-- Presets -->
         <div class="preset-avatars">
-          <span>预设头像：</span>
-          <button class="preset-btn" data-preset="agent">🤖 赛博 Agent</button>
-          <button class="preset-btn" data-preset="cat">🐱 量子猫</button>
-          <button class="preset-btn" data-preset="dragon">🐉 霓虹龙</button>
+          <span>预设示例：</span>
+          <button class="preset-btn" data-preset="portrait">👤 人像摄影</button>
+          <button class="preset-btn" data-preset="cat">🐱 橘猫拍立得</button>
+          <button class="preset-btn" data-preset="scenery">🌅 富士山夕阳</button>
         </div>
       </section>
 
-      <!-- Clean Text Inputs (Optional) -->
+      <!-- Polaroid Handwritten Caption & Date -->
       <section class="control-section">
-        <label class="section-label">📝 底部署名 (可选)</label>
+        <label class="section-label">✍️ 拍立得手写小字</label>
         <div class="form-group">
-          <input type="text" id="inputName" value="郭远凯 · Kai" maxlength="20" placeholder="填写姓名或留空">
+          <label>手写寄语 / 标题</label>
+          <input type="text" id="inputCaption" value="Summer Vibes · 2026" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label>拍摄日期 / 地点</label>
+          <input type="text" id="inputDate" value="2026.09.05 / Tokyo" maxlength="24">
         </div>
       </section>
     </aside>
 
-    <!-- Right: 3D Stage -->
+    <!-- 3D Stage -->
     <section class="stage-container">
-      <div class="stage-hint" id="stageHint">
-        <span>✨ 晃动鼠标体验 3D 悬浮与镭射全息流光</span>
+      <div class="stage-hint">
+        <span>✨ 晃动鼠标体验 3D 悬浮拍立得与胶片反光</span>
       </div>
 
-      <!-- 3D Card Scene -->
+      <!-- 3D Scene -->
       <div class="card-scene" id="cardScene">
-        
-        <!-- Interactive Particle Canvas Overlay -->
-        <canvas id="particleCanvas" class="particle-canvas"></canvas>
-
-        <!-- Pure Clean 3D Framed Holographic Card -->
-        <div class="holo-card" id="holoCard">
+        <!-- True Polaroid Frame Card -->
+        <div class="polaroid-card" id="polaroidCard">
           
-          <!-- Holographic Shimmer Overlays -->
-          <div class="layer-foil"></div>
-          <div class="layer-glare"></div>
-          <div class="layer-sparkles"></div>
+          <!-- Glossy Holographic Coating Layer -->
+          <div class="film-glare"></div>
+          <div class="film-hologram"></div>
 
-          <!-- Pure Clean Framed Avatar -->
-          <div class="card-frame-content">
-            <div class="card-avatar-box">
-              <div class="art-img-wrapper" id="artWrapper">
-                <img id="cardImage" src="" alt="Avatar Photo" crossorigin="anonymous">
-              </div>
-            </div>
+          <!-- The Photo Paper Body -->
+          <div class="polaroid-body">
             
-            <!-- Minimal Bottom Name Bar -->
-            <div class="card-clean-caption">
-              <span id="displayName">郭远凯 · Kai</span>
+            <!-- Dark Glossy Photo Area (Square / Classic 1:1 Aspect) -->
+            <div class="photo-pocket">
+              <img id="polaroidImage" src="" alt="Polaroid Photo" crossorigin="anonymous">
+              <div class="photo-shadow"></div>
             </div>
+
+            <!-- Bottom Classic White Chin for Handwritten Text -->
+            <div class="polaroid-chin">
+              <div class="handwritten-caption" id="displayCaption">Summer Vibes · 2026</div>
+              <div class="handwritten-date" id="displayDate">2026.09.05 / Tokyo</div>
+            </div>
+
           </div>
 
         </div>
