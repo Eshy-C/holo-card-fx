@@ -29,29 +29,34 @@
 
   <!-- Main Container -->
   <main class="app-main">
-    <!-- Controls Panel with Granular Sliders -->
+    <!-- Controls Panel with Clean Modular Grid -->
     <aside class="controls-panel">
       <div class="panel-header">
-        <h2>🛠️ 拍立得调色与光影控制台</h2>
-        <p>自由微调光影强度、胶片质感、相纸色温与手写笔迹</p>
+        <div class="panel-title-wrap">
+          <h2>🛠️ 拍立得调色与光影控制台</h2>
+          <span class="panel-badge">实时双向同步</span>
+        </div>
+        <p>自由微调全息光影、胶片影调、相纸材质与手写笔迹</p>
       </div>
 
-      <!-- 1. Photo Upload -->
-      <section class="control-section">
-        <label class="section-label">🖼️ 照片上传</label>
+      <!-- 1. Photo Upload Card -->
+      <section class="control-card">
+        <div class="card-title"><span class="card-icon">🖼️</span> 照片导入</div>
         <div class="upload-box" id="uploadDropzone">
           <input type="file" id="imageInput" accept="image/*" class="file-input">
           <div class="upload-content">
             <span class="upload-icon">📂</span>
-            <span class="upload-text">点击或拖拽上传你的照片</span>
-            <span class="upload-hint">支持 JPG、PNG、WebP 等任意图片格式</span>
+            <div class="upload-text-group">
+              <span class="upload-text">点击或拖拽上传照片</span>
+              <span class="upload-hint">支持 JPG、PNG、WebP 等格式</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- 2. Optical & Hologram Adjustments (Granular Sliders) -->
-      <section class="control-section">
-        <label class="section-label">✨ 全息光影与镀膜微调</label>
+      <!-- 2. Optical & Hologram Adjustments (2-Column Sliders) -->
+      <section class="control-card">
+        <div class="card-title"><span class="card-icon">✨</span> 全息光影与镀膜</div>
         
         <!-- Foil Hue Selector -->
         <div class="style-selector">
@@ -69,102 +74,109 @@
           </button>
         </div>
 
-        <!-- Sliders -->
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>全息镀膜强度</span>
-            <span class="slider-val" id="valHolo">45%</span>
+        <!-- 2-Column Sliders -->
+        <div class="sliders-grid">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>全息镀膜强度</span>
+              <span class="slider-val" id="valHolo">45%</span>
+            </div>
+            <input type="range" id="sliderHolo" min="0" max="100" value="45">
           </div>
-          <input type="range" id="sliderHolo" min="0" max="100" value="45">
-        </div>
 
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>胶片高光反光 (Glare)</span>
-            <span class="slider-val" id="valGlare">35%</span>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>胶片高光反光</span>
+              <span class="slider-val" id="valGlare">35%</span>
+            </div>
+            <input type="range" id="sliderGlare" min="0" max="100" value="35">
           </div>
-          <input type="range" id="sliderGlare" min="0" max="100" value="35">
         </div>
       </section>
 
-      <!-- 3. Film Color Grading Sliders -->
-      <section class="control-section">
-        <label class="section-label">🎞️ 胶片滤镜与影调调节</label>
+      <!-- 3. Film Color Grading (2-Column Grid) -->
+      <section class="control-card">
+        <div class="card-title"><span class="card-icon">🎞️</span> 胶片滤镜与影调微调</div>
         
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>曝光亮度 (Brightness)</span>
-            <span class="slider-val" id="valBrightness">100%</span>
+        <div class="sliders-grid">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>曝光亮度 (Bright)</span>
+              <span class="slider-val" id="valBrightness">100%</span>
+            </div>
+            <input type="range" id="sliderBrightness" min="70" max="140" value="100">
           </div>
-          <input type="range" id="sliderBrightness" min="70" max="140" value="100">
-        </div>
 
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>胶片对比度 (Contrast)</span>
-            <span class="slider-val" id="valContrast">105%</span>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>胶片对比度 (Contrast)</span>
+              <span class="slider-val" id="valContrast">105%</span>
+            </div>
+            <input type="range" id="sliderContrast" min="80" max="150" value="105">
           </div>
-          <input type="range" id="sliderContrast" min="80" max="150" value="105">
-        </div>
 
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>色彩饱和度 (Saturation)</span>
-            <span class="slider-val" id="valSaturation">110%</span>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>色彩饱和度 (Saturate)</span>
+              <span class="slider-val" id="valSaturation">110%</span>
+            </div>
+            <input type="range" id="sliderSaturation" min="0" max="200" value="110">
           </div>
-          <input type="range" id="sliderSaturation" min="0" max="200" value="110">
-        </div>
 
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>复古色温 / 暖调 (Warmth)</span>
-            <span class="slider-val" id="valWarmth">15%</span>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>复古暖色温 (Warmth)</span>
+              <span class="slider-val" id="valWarmth">15%</span>
+            </div>
+            <input type="range" id="sliderWarmth" min="0" max="100" value="15">
           </div>
-          <input type="range" id="sliderWarmth" min="0" max="100" value="15">
-        </div>
 
-        <div class="slider-group">
-          <div class="slider-header">
-            <span>暗角暗化 (Vignette)</span>
-            <span class="slider-val" id="valVignette">30%</span>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>镜头边缘暗角 (Vignette)</span>
+              <span class="slider-val" id="valVignette">30%</span>
+            </div>
+            <input type="range" id="sliderVignette" min="0" max="100" value="30">
           </div>
-          <input type="range" id="sliderVignette" min="0" max="100" value="30">
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>照片框圆角 (Radius)</span>
+              <span class="slider-val" id="valRadius">4px</span>
+            </div>
+            <input type="range" id="sliderRadius" min="0" max="16" value="4">
+          </div>
         </div>
       </section>
 
       <!-- 4. Paper & Frame Customization -->
-      <section class="control-section">
-        <label class="section-label">📄 相纸材质与底色</label>
+      <section class="control-card">
+        <div class="card-title"><span class="card-icon">📄</span> 相纸材质底色</div>
         <div class="paper-buttons">
           <button class="paper-btn active" data-paper="white" style="background:#fdfdfd;color:#1e293b;">经典纯白</button>
           <button class="paper-btn" data-paper="cream" style="background:#fef7ea;color:#78350f;">复古暖米</button>
           <button class="paper-btn" data-paper="pink" style="background:#fdf2f8;color:#831843;">落樱浅粉</button>
           <button class="paper-btn" data-paper="black" style="background:#18181b;color:#f4f4f5;">曜石黑卡</button>
         </div>
-
-        <div class="slider-group" style="margin-top: 8px;">
-          <div class="slider-header">
-            <span>照片框圆角</span>
-            <span class="slider-val" id="valRadius">4px</span>
-          </div>
-          <input type="range" id="sliderRadius" min="0" max="16" value="4">
-        </div>
       </section>
 
-      <!-- 5. Handwritten Caption & Ink Color -->
-      <section class="control-section">
-        <label class="section-label">✍️ 拍立得手写签名</label>
-        <div class="form-group">
-          <label>手写寄语</label>
-          <input type="text" id="inputCaption" value="Summer Vibes · 2026" maxlength="30">
-        </div>
-        <div class="form-group">
-          <label>拍摄日期 / 地点</label>
-          <input type="text" id="inputDate" value="2026.09.05 / Tokyo" maxlength="24">
+      <!-- 5. Handwritten Caption & Ink (2-Column Inputs) -->
+      <section class="control-card">
+        <div class="card-title"><span class="card-icon">✍️</span> 拍立得手写签名与笔墨</div>
+        
+        <div class="inputs-grid">
+          <div class="form-group">
+            <label>手写寄语</label>
+            <input type="text" id="inputCaption" value="Summer Vibes · 2026" maxlength="30">
+          </div>
+          <div class="form-group">
+            <label>拍摄日期 / 地点</label>
+            <input type="text" id="inputDate" value="2026.09.05 / Tokyo" maxlength="24">
+          </div>
         </div>
         
         <div class="ink-color-row">
-          <span class="ink-label">笔墨颜色：</span>
+          <span class="ink-label">笔墨油漆：</span>
           <div class="ink-options">
             <button class="ink-dot active" data-ink="#1e293b" style="background:#1e293b;" title="中性黑"></button>
             <button class="ink-dot" data-ink="#1d4ed8" style="background:#1d4ed8;" title="钢笔蓝"></button>
