@@ -1,11 +1,13 @@
 /**
- * HoloCard FX - 3D Interactive Holographic Card Engine, Particles & Gyroscope
+ * HoloCard FX - 3D Interactive Holographic Polaroid Engine, Particles & HD Exporter
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const holoCard = document.getElementById('holoCard');
   const cardScene = document.getElementById('cardScene');
+  const cardFrontFace = document.getElementById('cardFrontFace');
+  const cardBackFace = document.getElementById('cardBackFace');
   const particleCanvas = document.getElementById('particleCanvas');
   const ctxParticles = particleCanvas ? particleCanvas.getContext('2d') : null;
   
@@ -13,26 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputName = document.getElementById('inputName');
   const displayName = document.getElementById('displayName');
   
-  const inputRarity = document.getElementById('inputRarity');
-  const displayRarity = document.getElementById('displayRarity');
+  const inputSubtitle = document.getElementById('inputSubtitle');
+  const displaySubtitle = document.getElementById('displaySubtitle');
   
-  const inputType = document.getElementById('inputType');
-  const displayType = document.getElementById('displayType');
-  
-  const inputNumber = document.getElementById('inputNumber');
-  const displayNumber = document.getElementById('displayNumber');
-  
-  const inputHp = document.getElementById('inputHp');
-  const displayHp = document.getElementById('displayHp');
-  
-  const inputAtk = document.getElementById('inputAtk');
-  const displayAtk = document.getElementById('displayAtk');
-  
-  const inputSkillName = document.getElementById('inputSkillName');
-  const displaySkillName = document.getElementById('displaySkillName');
-  
-  const inputSkillDesc = document.getElementById('inputSkillDesc');
-  const displaySkillDesc = document.getElementById('displaySkillDesc');
+  const inputBadge = document.getElementById('inputBadge');
+  const displayBadge = document.getElementById('displayBadge');
   
   const imageInput = document.getElementById('imageInput');
   const cardImage = document.getElementById('cardImage');
@@ -43,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSoundToggle = document.getElementById('btnSoundToggle');
   const btnFlip = document.getElementById('btnFlip');
   const btnAutoSpin = document.getElementById('btnAutoSpin');
-  const btnRandom = document.getElementById('btnRandom');
   const btnExport = document.getElementById('btnExport');
   const styleBtns = document.querySelectorAll('.style-btn');
   const filterBtns = document.querySelectorAll('.filter-btn');
@@ -52,6 +38,75 @@ document.addEventListener('DOMContentLoaded', () => {
   let isAutoSpinning = false;
   let isSoundEnabled = true;
   let isFlipped = false;
+
+  // ========================================================
+  // 🖼️ High Quality SVG Data URIs for Zero-CORS Presets
+  // ========================================================
+  function generatePresetSVG(type) {
+    if (type === 'agent') {
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="%231e1b4b"/>
+            <stop offset="50%" stop-color="%234338ca"/>
+            <stop offset="100%" stop-color="%2306b6d4"/>
+          </linearGradient>
+          <radialGradient id="g2" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stop-color="%2300f0ff" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="%23000000" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="600" height="700" fill="url(%23g1)"/>
+        <circle cx="300" cy="280" r="180" fill="url(%23g2)"/>
+        <!-- Cyber Avatar Silhouette -->
+        <circle cx="300" cy="250" r="70" fill="%23ffffff" opacity="0.9"/>
+        <rect x="230" y="235" width="140" height="26" rx="13" fill="%2300f0ff"/>
+        <path d="M180 430 C180 340, 420 340, 420 430 L420 520 L180 520 Z" fill="%23e0e7ff" opacity="0.85"/>
+        <text x="300" y="580" fill="%2300f0ff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">CYBER AGENT CORE</text>
+      </svg>`;
+    } else if (type === 'cat') {
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+        <defs>
+          <linearGradient id="catG" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="%23831843"/>
+            <stop offset="50%" stop-color="%23be185d"/>
+            <stop offset="100%" stop-color="%23f43f5e"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="700" fill="url(%23catG)"/>
+        <circle cx="300" cy="350" r="140" fill="%23fdf2f8" opacity="0.95"/>
+        <!-- Cat ears -->
+        <polygon points="200,280 230,170 280,240" fill="%23fdf2f8"/>
+        <polygon points="400,280 370,170 320,240" fill="%23fdf2f8"/>
+        <!-- Eyes -->
+        <circle cx="250" cy="330" r="16" fill="%230f172a"/>
+        <circle cx="350" cy="330" r="16" fill="%230f172a"/>
+        <circle cx="254" cy="326" r="5" fill="%23ffffff"/>
+        <circle cx="354" cy="326" r="5" fill="%23ffffff"/>
+        <!-- Nose -->
+        <polygon points="300,360 290,350 310,350" fill="%23fb7185"/>
+        <text x="300" y="580" fill="%23ffffff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">QUANTUM NEKO</text>
+      </svg>`;
+    } else {
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+        <defs>
+          <linearGradient id="dragG" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="%23064e3b"/>
+            <stop offset="50%" stop-color="%23059669"/>
+            <stop offset="100%" stop-color="%2310b981"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="700" fill="url(%23dragG)"/>
+        <circle cx="300" cy="320" r="130" fill="%23ecfdf5" opacity="0.9"/>
+        <polygon points="300,160 380,320 220,320" fill="%23064e3b"/>
+        <polygon points="300,200 350,300 250,300" fill="%2310b981"/>
+        <text x="300" y="580" fill="%23ffffff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">NEON DRAGON</text>
+      </svg>`;
+    }
+  }
+
+  // Set default image to clean local Base64 SVG
+  cardImage.src = generatePresetSVG('agent');
 
   // ========================================================
   // 🔊 Web Audio API Synthesizer (Crystal Chimes & SSR Sparkles)
@@ -244,13 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   renderParticles();
 
-  // Preset Images
-  const presets = {
-    agent: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-    cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80',
-    dragon: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=600&q=80'
-  };
-
   // 1. Dynamic Text & Value Binding
   function bindInput(input, display, formatter = (v) => v) {
     input.addEventListener('input', (e) => {
@@ -259,13 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   bindInput(inputName, displayName);
-  bindInput(inputRarity, displayRarity);
-  bindInput(inputType, displayType);
-  bindInput(inputNumber, displayNumber);
-  bindInput(inputHp, displayHp);
-  bindInput(inputAtk, displayAtk);
-  bindInput(inputSkillName, displaySkillName);
-  bindInput(inputSkillDesc, displaySkillDesc);
+  bindInput(inputSubtitle, displaySubtitle);
+  bindInput(inputBadge, displayBadge);
 
   // 2. 3D Tilt & Holographic Foil Physics Engine
   let bounds;
@@ -341,8 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', (e) => {
       if (isAutoSpinning || !e.gamma || !e.beta) return;
-      const gamma = Math.min(Math.max(e.gamma, -40), 40); // left/right tilt
-      const beta = Math.min(Math.max(e.beta - 45, -40), 40); // forward/back tilt
+      const gamma = Math.min(Math.max(e.gamma, -40), 40);
+      const beta = Math.min(Math.max(e.beta - 45, -40), 40);
       
       const rotateY = (gamma / 40) * 22;
       const rotateX = -(beta / 40) * 22;
@@ -403,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 8. Image Upload & Drag-and-Drop
+  // 8. Image Upload & Drag-and-Drop (Always base64 for safe export)
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -445,10 +488,8 @@ document.addEventListener('DOMContentLoaded', () => {
   presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const preset = btn.dataset.preset;
-      if (presets[preset]) {
-        cardImage.src = presets[preset];
-        playShimmerSound(1.2);
-      }
+      cardImage.src = generatePresetSVG(preset);
+      playShimmerSound(1.2);
     });
   });
 
@@ -469,122 +510,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 10. 🎲 Randomizer for Fun Stats
-  const randomPool = [
-    {
-      name: 'Kai · 赛博炼金术士',
-      rarity: 'UR · SECRET',
-      type: '⚡ AI / Compute',
-      number: `NO. ${Math.floor(Math.random() * 900 + 100)} / 999`,
-      hp: 12500,
-      atk: 9900,
-      skill: '超弦并发协议 (Hyper-Thread)',
-      desc: '一次性调度 1024 个后台 Agent，在内存溢出前瞬间吞噬整个业务需求。',
-      style: 'cosmic',
-      filter: 'cyber'
-    },
-    {
-      name: '量子猫咪 · 降维打击',
-      rarity: 'SSR · LEGEND',
-      type: '🔮 Python / Void',
-      number: `NO. ${Math.floor(Math.random() * 900 + 100)} / 999`,
-      hp: 8800,
-      atk: 10800,
-      skill: '踩踏物理键盘 (Cat On Keyboard)',
-      desc: '用肉垫优雅地按下一串随机字符并强制 git push -f 到 main 主分支。',
-      style: 'cyber',
-      filter: 'holo'
-    },
-    {
-      name: '黄金架构师 · 零 Bug 领域',
-      rarity: 'CYBER · GOD',
-      type: '☕ Java / Engine',
-      number: `NO. ${Math.floor(Math.random() * 900 + 100)} / 999`,
-      hp: 19999,
-      atk: 14500,
-      skill: '垃圾回收结界 (Full GC Buster)',
-      desc: '在毫秒间清空所有技术债务，让服务器 CPU 利用率恒定在最优雅的 42%。',
-      style: 'gold',
-      filter: 'gold'
-    },
-    {
-      name: '时空碎钻 · 极光幻影',
-      rarity: 'HOLO · SPEC',
-      type: '🌌 Quantum / Space',
-      number: `NO. ${Math.floor(Math.random() * 900 + 100)} / 999`,
-      hp: 9200,
-      atk: 8900,
-      skill: '视差全息棱镜 (Prism Refraction)',
-      desc: '折射出五彩斑斓的黑与流光溢彩的白，直接震撼产品经理的视觉审美。',
-      style: 'diamond',
-      filter: 'dither'
-    }
-  ];
-
-  btnRandom.addEventListener('click', () => {
-    const item = randomPool[Math.floor(Math.random() * randomPool.length)];
-    
-    inputName.value = item.name;
-    displayName.textContent = item.name;
-    
-    inputRarity.value = item.rarity;
-    displayRarity.textContent = item.rarity;
-    
-    inputType.value = item.type;
-    displayType.textContent = item.type;
-    
-    inputNumber.value = item.number;
-    displayNumber.textContent = item.number;
-    
-    inputHp.value = item.hp;
-    displayHp.textContent = item.hp;
-    
-    inputAtk.value = item.atk;
-    displayAtk.textContent = item.atk;
-    
-    inputSkillName.value = item.skill;
-    displaySkillName.textContent = item.skill;
-    
-    inputSkillDesc.value = item.desc;
-    displaySkillDesc.textContent = item.desc;
-
-    const targetStyleBtn = document.querySelector(`.style-btn[data-style="${item.style}"]`);
-    if (targetStyleBtn) targetStyleBtn.click();
-
-    const targetFilterBtn = document.querySelector(`.filter-btn[data-filter="${item.filter}"]`);
-    if (targetFilterBtn) targetFilterBtn.click();
-
-    playSSRChime();
-  });
-
-  // 11. 📸 Card Snapshot Export (Front & Back)
+  // ========================================================
+  // 📸 Ultra-Reliable HD Snapshot Exporter
+  // ========================================================
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
-    btnExport.textContent = '⏳ 生成中...';
+    btnExport.textContent = '⏳ 高清生成中...';
     btnExport.disabled = true;
 
     try {
-      const prevTransform = holoCard.style.transform;
-      holoCard.style.transform = 'none';
+      const targetFace = isFlipped ? cardBackFace : cardFrontFace;
+      
+      // Clone the target face into an off-screen container without 3D transforms
+      const clone = targetFace.cloneNode(true);
+      clone.style.position = 'fixed';
+      clone.style.left = '-9999px';
+      clone.style.top = '-9999px';
+      clone.style.width = '350px';
+      clone.style.height = '520px';
+      clone.style.transform = 'none';
+      clone.style.borderRadius = '22px';
+      clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+      clone.style.overflow = 'hidden';
+      
+      document.body.appendChild(clone);
 
-      const targetFace = isFlipped ? document.querySelector('.card-back') : document.querySelector('.card-front');
-
-      const canvas = await html2canvas(targetFace, {
+      const canvas = await html2canvas(clone, {
         backgroundColor: null,
-        scale: 2,
+        scale: 2.5, // Crisp 2.5x HD Retina export
         useCORS: true,
-        allowTaint: true
+        allowTaint: true,
+        logging: false
       });
 
-      holoCard.style.transform = prevTransform;
+      document.body.removeChild(clone);
 
+      // Download PNG
       const link = document.createElement('a');
-      link.download = `HoloCard-${inputName.value.replace(/\s+/g, '_')}-${isFlipped ? 'Back' : 'Front'}.png`;
+      const safeName = (inputName.value || 'HoloCard').replace(/\s+/g, '_');
+      link.download = `HoloCard-${safeName}-${isFlipped ? 'Back' : 'Front'}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      
+      playSSRChime();
     } catch (err) {
-      console.error('Export failed:', err);
-      alert('导出图片时遇到问题，您可以直接对卡片进行截图保存！');
+      console.error('Export error:', err);
+      alert('导出图片时遇到问题，您可以直接截图保存！');
     } finally {
       btnExport.textContent = originalText;
       btnExport.disabled = false;

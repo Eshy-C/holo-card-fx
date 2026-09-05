@@ -409,19 +409,7 @@ input:checked + .slider:before {
   transform: translateX(20px);
 }
 
-/* Forms */
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
+/* Form Fields */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -434,28 +422,20 @@ input:checked + .slider:before {
   color: var(--text-muted);
 }
 
-input[type="text"],
-input[type="number"],
-select,
-textarea {
+input[type="text"] {
   font-family: inherit;
   font-size: 13px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   color: #fff;
-  padding: 8px 12px;
+  padding: 9px 12px;
   outline: none;
   transition: border-color 0.2s;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus {
   border-color: #818cf8;
-}
-
-textarea {
-  resize: vertical;
-  line-height: 1.4;
 }
 
 /* Right Stage */
@@ -552,6 +532,144 @@ textarea {
   transform: rotateY(180deg);
   background: radial-gradient(circle at center, #1b203a 0%, #0c0e18 100%);
   border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* =======================================================
+   🖼️ CLEAN AESTHETIC POLAROID / ART PHOTO CARD
+   ======================================================= */
+
+.photo-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+  transform-style: preserve-3d;
+}
+
+.popout-enabled .float-layer {
+  transform: translateZ(24px);
+  transition: transform 0.2s ease;
+}
+
+.popout-enabled .popout-target {
+  transform: translateZ(36px);
+  transition: transform 0.2s ease;
+}
+
+/* Card Top Bar */
+.card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px 6px 4px;
+}
+
+.card-name-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-badge {
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.6px;
+  color: #a5b4fc;
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+
+.card-seal-dot {
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+/* Large Main Artwork Frame */
+.card-photo-frame {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6), inset 0 0 25px rgba(0,0,0,0.5);
+  background: #000;
+}
+
+.art-img-wrapper {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s ease;
+}
+
+.card-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Avatar Fusion Filters */
+.filter-cyber .art-img-wrapper {
+  filter: contrast(140%) saturate(180%) hue-rotate(170deg) drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
+}
+.filter-gold .art-img-wrapper {
+  filter: sepia(100%) contrast(150%) brightness(110%) saturate(220%) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
+}
+.filter-holo .art-img-wrapper {
+  filter: invert(15%) contrast(180%) hue-rotate(270deg) brightness(120%);
+  mix-blend-mode: screen;
+}
+.filter-dither .art-img-wrapper {
+  filter: grayscale(100%) contrast(250%) brightness(105%);
+}
+
+.art-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 75%, rgba(0,0,0,0.6));
+  pointer-events: none;
+}
+
+/* Card Bottom Caption */
+.card-bottom-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  padding: 6px 4px 2px 4px;
+}
+
+.caption-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #e2e8f0;
+  text-transform: uppercase;
+}
+
+.caption-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #64748b;
+  text-transform: uppercase;
 }
 
 /* =======================================================
@@ -677,217 +795,6 @@ textarea {
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px;
   color: #94a3b8;
-}
-
-/* 3D Multi-layer Parallax Depth */
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 1;
-  transform-style: preserve-3d;
-}
-
-.popout-enabled .float-layer {
-  transform: translateZ(24px);
-  transition: transform 0.2s ease;
-}
-
-.popout-enabled .popout-target {
-  transform: translateZ(42px);
-  transition: transform 0.2s ease;
-}
-
-.popout-enabled .float-layer-seal {
-  transform: translateZ(55px);
-}
-
-/* Card Top Bar */
-.card-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.card-name-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-badge {
-  font-size: 10px;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(6px);
-  padding: 3px 7px;
-  border-radius: 6px;
-  letter-spacing: 0.4px;
-}
-
-.card-name {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-}
-
-.card-hp-group {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.hp-label {
-  font-size: 10px;
-  font-weight: 800;
-  color: #f43f5e;
-}
-
-.hp-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 17px;
-  font-weight: 800;
-  color: #fff;
-}
-
-/* Artwork Box */
-.card-art-box {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.6);
-  background: #000;
-}
-
-.art-img-wrapper {
-  width: 100%;
-  height: 100%;
-  transition: filter 0.3s ease;
-}
-
-.card-art-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-/* Avatar Fusion Filters */
-.filter-cyber .art-img-wrapper {
-  filter: contrast(140%) saturate(180%) hue-rotate(170deg) drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
-}
-.filter-gold .art-img-wrapper {
-  filter: sepia(100%) contrast(150%) brightness(110%) saturate(220%) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
-}
-.filter-holo .art-img-wrapper {
-  filter: invert(15%) contrast(180%) hue-rotate(270deg) brightness(120%);
-  mix-blend-mode: screen;
-}
-.filter-dither .art-img-wrapper {
-  filter: grayscale(100%) contrast(250%) brightness(105%);
-}
-
-.art-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
-  pointer-events: none;
-}
-
-.rarity-seal {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: linear-gradient(135deg, #ffd700, #ff8c00);
-  color: #000;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  letter-spacing: 0.5px;
-}
-
-/* Middle Stats */
-.card-mid-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  padding: 6px 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.number-tag {
-  font-family: 'JetBrains Mono', monospace;
-  color: #94a3b8;
-  font-weight: 600;
-}
-
-.atk-tag {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.atk-tag span {
-  color: #38bdf8;
-  font-weight: 800;
-  font-size: 10px;
-}
-
-.atk-tag strong {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  color: #fff;
-}
-
-/* Bottom Skill */
-.card-bottom-info {
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 12px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.skill-title-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.skill-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: #e0e7ff;
-}
-
-.skill-desc {
-  font-size: 10.5px;
-  line-height: 1.4;
-  color: #cbd5e1;
-}
-
-/* Footer */
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  font-size: 8.5px;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.5px;
-  padding-top: 4px;
 }
 
 /* =======================================================

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>HoloCard FX · 3D 全息闪卡工坊</title>
+  <title>HoloCard FX · 3D 全息拍立得工坊</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,6 @@
     <div class="header-actions">
       <button id="btnSoundToggle" class="btn btn-secondary" title="切换音效">🔊 音效: 开</button>
       <button id="btnFlip" class="btn btn-secondary">🔄 翻转卡背</button>
-      <button id="btnRandom" class="btn btn-secondary">🎲 随机属性</button>
       <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 巡航</button>
       <button id="btnExport" class="btn btn-primary">📸 导出高清卡片</button>
     </div>
@@ -34,8 +33,8 @@
     <!-- Left Sidebar: Controls -->
     <aside class="controls-panel">
       <div class="panel-header">
-        <h2>🛠️ 卡牌定制工坊</h2>
-        <p>双面 3D 渲染、手机重力感应、星芒粒子与头像艺术融合</p>
+        <h2>🎨 全息相框定制工坊</h2>
+        <p>定制属于你的 3D 全息特卡，极简相框与艺术光影融合</p>
       </div>
 
       <!-- Theme / Foil Texture -->
@@ -64,8 +63,8 @@
           <input type="file" id="imageInput" accept="image/*" class="file-input">
           <div class="upload-content">
             <span class="upload-icon">📂</span>
-            <span class="upload-text">点击或拖拽图片到此处</span>
-            <span class="upload-hint">支持各种自拍、插画或头像图片</span>
+            <span class="upload-text">点击或拖拽上传你的照片 / 头像</span>
+            <span class="upload-hint">支持自拍、宠物、AI 插画等任意图片</span>
           </div>
         </div>
 
@@ -90,12 +89,12 @@
         </div>
       </section>
 
-      <!-- 3D Pop-out & Particle Settings -->
+      <!-- 3D Pop-out Setting -->
       <section class="control-section">
         <div class="toggle-row">
           <div>
             <label class="section-label">💥 3D 破框立体视差</label>
-            <p class="toggle-hint">开启后角色头像与光效将悬浮于卡牌表面</p>
+            <p class="toggle-hint">开启后照片头像将悬浮于卡牌表面</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="togglePopout" checked>
@@ -104,69 +103,23 @@
         </div>
       </section>
 
-      <!-- Card Information Form -->
+      <!-- Card Information Form (Clean) -->
       <section class="control-section">
-        <label class="section-label">📝 基础信息</label>
+        <label class="section-label">📝 文字与署名定制</label>
         
-        <div class="form-row">
-          <div class="form-group">
-            <label>角色名称</label>
-            <input type="text" id="inputName" value="Kai · Agent 架构师" maxlength="24">
-          </div>
-          <div class="form-group">
-            <label>稀有度</label>
-            <select id="inputRarity">
-              <option value="UR · SECRET">UR · 极罕见秘卡</option>
-              <option value="SSR · LEGEND">SSR · 传奇典藏</option>
-              <option value="HOLO · SPEC">HOLO · 全息限定</option>
-              <option value="CYBER · GOD">GOD · 算力真神</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>元素属性</label>
-            <select id="inputType">
-              <option value="⚡ AI / Compute">⚡ AI / 算力</option>
-              <option value="🔮 Python / Void">🔮 Python / 虚空</option>
-              <option value="☕ Java / Engine">☕ Java / 引擎</option>
-              <option value="🔥 Cyber / Fire">🔥 赛博 / 烈焰</option>
-              <option value="🌌 Quantum / Space">🌌 量子 / 时空</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>卡牌编号</label>
-            <input type="text" id="inputNumber" value="NO. 007 / 999" maxlength="16">
-          </div>
-        </div>
-      </section>
-
-      <!-- Battle / Attribute Stats -->
-      <section class="control-section">
-        <label class="section-label">⚡ 战力与属性数值</label>
-        <div class="stats-grid">
-          <div class="form-group">
-            <label>HP (稳定性/生命)</label>
-            <input type="number" id="inputHp" value="9800" min="100" max="99999">
-          </div>
-          <div class="form-group">
-            <label>ATK (算力输出)</label>
-            <input type="number" id="inputAtk" value="8500" min="100" max="99999">
-          </div>
-        </div>
-      </section>
-
-      <!-- Ability & Lore -->
-      <section class="control-section">
-        <label class="section-label">⚔️ 专属技能与描述</label>
         <div class="form-group">
-          <label>技能名称</label>
-          <input type="text" id="inputSkillName" value="多智能体共鸣 (Multi-Agent Swarm)" maxlength="30">
+          <label>卡片名称 / 角色昵称</label>
+          <input type="text" id="inputName" value="郭远凯 · Kai" maxlength="24">
         </div>
+
         <div class="form-group">
-          <label>技能与背景描述</label>
-          <textarea id="inputSkillDesc" rows="3">唤醒并发的 AI Agent 集群节点，对一切底层屎山代码发起自动化重构，必定造成暴击伤害并免除所有线上 Bug 责任。</textarea>
+          <label>副标题 / 身份签名</label>
+          <input type="text" id="inputSubtitle" value="AI AGENT DEVELOPER · PYTHON & JAVA" maxlength="40">
+        </div>
+
+        <div class="form-group">
+          <label>底部徽章 / 纪念标签</label>
+          <input type="text" id="inputBadge" value="✦ SPECIAL EDITION 2026 ✦" maxlength="32">
         </div>
       </section>
     </aside>
@@ -185,74 +138,50 @@
 
         <div class="holo-card popout-enabled" id="holoCard">
           
-          <!-- ================= FRONT FACE ================= -->
-          <div class="card-face card-front">
+          <!-- ================= FRONT FACE (CLEAN AESTHETIC FRAME) ================= -->
+          <div class="card-face card-front" id="cardFrontFace">
             <!-- Holographic Shimmer Overlays -->
             <div class="layer-foil"></div>
             <div class="layer-glare"></div>
             <div class="layer-sparkles"></div>
 
-            <!-- Card Content Body (Multi-layer 3D Depth) -->
-            <div class="card-inner">
+            <!-- Card Content Body (Clean Framed Gallery Look) -->
+            <div class="card-inner photo-card-inner">
               
-              <!-- Card Header (Floating Layer) -->
+              <!-- Card Top Bar: Clean Title -->
               <div class="card-top-bar float-layer">
                 <div class="card-name-group">
-                  <span class="card-badge" id="displayType">⚡ AI / Compute</span>
-                  <h3 class="card-name" id="displayName">Kai · Agent 架构师</h3>
+                  <span class="card-badge" id="displayEditionTag">HOLO · 2026</span>
+                  <h3 class="card-name" id="displayName">郭远凯 · Kai</h3>
                 </div>
-                <div class="card-hp-group">
-                  <span class="hp-label">HP</span>
-                  <span class="hp-val" id="displayHp">9800</span>
-                </div>
+                <div class="card-seal-dot">✦</div>
               </div>
 
-              <!-- Card Artwork Frame (High 3D Pop-out Layer) -->
-              <div class="card-art-box popout-target">
+              <!-- Main Artwork Frame (Large & Centered) -->
+              <div class="card-photo-frame popout-target">
                 <div class="art-img-wrapper" id="artWrapper">
-                  <img id="cardImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Card Artwork" crossorigin="anonymous">
+                  <img id="cardImage" src="" alt="Card Artwork" crossorigin="anonymous">
                 </div>
                 <div class="art-overlay"></div>
-                <div class="rarity-seal float-layer-seal" id="displayRarity">UR · SECRET</div>
               </div>
 
-              <!-- Card Middle Stat Bar -->
-              <div class="card-mid-bar float-layer">
-                <div class="number-tag" id="displayNumber">NO. 007 / 999</div>
-                <div class="atk-tag">
-                  <span>ATK</span>
-                  <strong id="displayAtk">8500</strong>
-                </div>
+              <!-- Card Bottom Info: Clean Typography -->
+              <div class="card-bottom-caption float-layer">
+                <div class="caption-title" id="displaySubtitle">AI AGENT DEVELOPER · PYTHON & JAVA</div>
+                <div class="caption-badge" id="displayBadge">✦ SPECIAL EDITION 2026 ✦</div>
               </div>
 
-              <!-- Card Bottom: Skill & Lore -->
-              <div class="card-bottom-info float-layer">
-                <div class="skill-title-row">
-                  <span class="skill-icon">⚡</span>
-                  <h4 class="skill-name" id="displaySkillName">多智能体共鸣 (Multi-Agent Swarm)</h4>
-                </div>
-                <p class="skill-desc" id="displaySkillDesc">
-                  唤醒并发的 AI Agent 集群节点，对一切底层屎山代码发起自动化重构，必定造成暴击伤害并免除所有线上 Bug 责任。
-                </p>
-              </div>
-
-              <!-- Card Footer -->
-              <div class="card-footer">
-                <span>HOLOCARD PROTOCOL</span>
-                <span>★ ILLUS. KAI_HEX ★</span>
-                <span>EDITION 2026</span>
-              </div>
             </div>
           </div>
 
           <!-- ================= BACK FACE ================= -->
-          <div class="card-face card-back">
+          <div class="card-face card-back" id="cardBackFace">
             <div class="layer-foil back-foil"></div>
             <div class="layer-glare"></div>
 
             <div class="back-inner">
               <div class="back-header">
-                <span class="back-badge">OFFICIAL TCG CERTIFIED</span>
+                <span class="back-badge">OFFICIAL HOLOCARD CERTIFIED</span>
                 <span class="back-edition">SERIES 2026</span>
               </div>
 
@@ -263,7 +192,7 @@
                 <div class="sigil-core">
                   <span class="sigil-icon">🎴</span>
                   <span class="sigil-title">HOLOCARD</span>
-                  <span class="sigil-subtitle">GENESIS PROTOCOL</span>
+                  <span class="sigil-subtitle">COLLECTOR PROTOCOL</span>
                 </div>
               </div>
 
