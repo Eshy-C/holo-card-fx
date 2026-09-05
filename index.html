@@ -225,13 +225,21 @@
         </div>
         
         <div class="ink-color-row">
-          <span class="ink-label">笔墨油漆：</span>
+          <div class="ink-label-group">
+            <span class="ink-label">笔墨油漆</span>
+            <span class="ink-hex-badge" id="inkHexBadge">#1E293B</span>
+          </div>
           <div class="ink-options">
             <button class="ink-dot active" data-ink="#1e293b" style="background:#1e293b;" title="中性黑"></button>
             <button class="ink-dot" data-ink="#1d4ed8" style="background:#1d4ed8;" title="钢笔蓝"></button>
             <button class="ink-dot" data-ink="#be123c" style="background:#be123c;" title="复古红"></button>
             <button class="ink-dot" data-ink="#d97706" style="background:#d97706;" title="金色油墨"></button>
             <button class="ink-dot" data-ink="#f8fafc" style="background:#f8fafc;" title="白银油漆笔"></button>
+            <div class="custom-ink-wrap" id="customInkWrap" title="点击打开自定义调色板拾色">
+              <input type="color" id="inkColorPicker" value="#1e293b" class="ink-color-input">
+              <div class="palette-preview" id="palettePreview"></div>
+              <span class="palette-icon">🎨</span>
+            </div>
           </div>
         </div>
       </section>

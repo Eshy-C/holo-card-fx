@@ -91,10 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderRadius = document.getElementById('sliderRadius');
   const valRadius = document.getElementById('valRadius');
 
-  // Button Groups
+  // Button Groups & Ink Picker
   const styleBtns = document.querySelectorAll('.style-btn');
   const paperBtns = document.querySelectorAll('.paper-btn');
   const inkDots = document.querySelectorAll('.ink-dot');
+  const inkColorPicker = document.getElementById('inkColorPicker');
+  const customInkWrap = document.getElementById('customInkWrap');
+  const palettePreview = document.getElementById('palettePreview');
+  const inkHexBadge = document.getElementById('inkHexBadge');
 
   let isAutoSpinning = false;
 
@@ -342,14 +346,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  function setInkColor(color, isCustom = false) {
+    state.inkColor = color;
+    if (inkHexBadge) inkHexBadge.textContent = color.toUpperCase();
+    if (inkColorPicker) inkColorPicker.value = color.length === 7 ? color : '#1e293b';
+    if (palettePreview) palettePreview.style.background = color;
+
+    if (isCustom) {
+      inkDots.forEach((d) => d.classList.remove('active'));
+      if (customInkWrap) customInkWrap.classList.add('active');
+    } else {
+      if (customInkWrap) customInkWrap.classList.remove('active');
+    }
+    applyState();
+  }
+
   inkDots.forEach((dot) => {
     dot.addEventListener('click', () => {
       inkDots.forEach((d) => d.classList.remove('active'));
       dot.classList.add('active');
-      state.inkColor = dot.dataset.ink;
-      applyState();
+      setInkColor(dot.dataset.ink, false);
     });
   });
+
+  if (inkColorPicker) {
+    const handleCustomColor = (e) => {
+      setInkColor(e.target.value, true);
+    };
+    inkColorPicker.addEventListener('input', handleCustomColor);
+    inkColorPicker.addEventListener('change', handleCustomColor);
+  }
 
   // Reset Button
   btnReset.addEventListener('click', () => {
@@ -364,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
     state.radius = 4;
     state.theme = 'rainbow';
     state.paper = 'white';
-    state.inkColor = '#1e293b';
 
     sliderHolo.value = 45; valHolo.textContent = '45%';
     sliderGlare.value = 35; valGlare.textContent = '35%';
@@ -391,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     styleBtns[0].click();
     paperBtns[0].click();
     inkDots[0].click();
+    setInkColor('#1e293b', false);
     applyState();
   });
 
