@@ -232,10 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // HD Polaroid Snapshot Exporter
+  // HD Polaroid Snapshot Exporter with Balanced Natural Glare
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
-    btnExport.textContent = '⏳ 生成中...';
+    btnExport.textContent = '⏳ 高清生成中...';
     btnExport.disabled = true;
 
     try {
@@ -246,15 +246,22 @@ document.addEventListener('DOMContentLoaded', () => {
       clone.style.width = '330px';
       clone.style.height = '410px';
       clone.style.transform = 'none';
-      clone.style.borderRadius = '8px';
-      clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.4)';
+      clone.style.borderRadius = '6px';
+      clone.style.boxShadow = '0 12px 36px rgba(0,0,0,0.3)';
       clone.style.background = '#fdfdfd';
+      clone.style.padding = '16px 16px 0 16px';
+      
+      // Inject ideal balanced natural lighting angles for export
+      clone.style.setProperty('--rx', '4deg');
+      clone.style.setProperty('--ry', '-6deg');
+      clone.style.setProperty('--posx', '35%');
+      clone.style.setProperty('--posy', '30%');
       
       document.body.appendChild(clone);
 
       const canvas = await html2canvas(clone, {
         backgroundColor: null,
-        scale: 3,
+        scale: 3, // 3x Ultra HD
         useCORS: true,
         allowTaint: true,
         logging: false

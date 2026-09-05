@@ -37,7 +37,7 @@
 
       <!-- Theme / Shimmer Tone -->
       <section class="control-section">
-        <label class="section-label">✨ 全息光影镀膜</label>
+        <label class="section-label">✨ 胶片光影镀膜</label>
         <div class="style-selector">
           <button class="style-btn active" data-style="rainbow">
             <span class="style-dot rainbow"></span>彩虹极光
@@ -100,16 +100,14 @@
         <!-- True Polaroid Frame Card -->
         <div class="polaroid-card" id="polaroidCard">
           
-          <!-- Glossy Holographic Coating Layer -->
-          <div class="film-glare"></div>
-          <div class="film-hologram"></div>
-
-          <!-- The Photo Paper Body -->
           <div class="polaroid-body">
             
             <!-- Dark Glossy Photo Area (Square / Classic 1:1 Aspect) -->
             <div class="photo-pocket">
               <img id="polaroidImage" src="" alt="Polaroid Photo" crossorigin="anonymous">
+              <!-- Internal Glare & Shimmer Layers (Strictly clipped to Photo Box) -->
+              <div class="film-glare"></div>
+              <div class="film-hologram"></div>
               <div class="photo-shadow"></div>
             </div>
 
