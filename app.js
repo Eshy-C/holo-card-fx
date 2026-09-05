@@ -1,6 +1,6 @@
 /**
  * HoloCard FX - Pro Polaroid Studio
- * Robust Direct-Binding Engine for Real-Time Adjustments & Export
+ * Direct DOM Reactivity + Pixel-Perfect HTML5 Canvas 2D Native Exporter
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ========================================================
-  // ⚡ Direct State Applier (Guaranteed Instant Visual Update)
+  // ⚡ Direct State Applier (Real-time 0ms DOM Rendering)
   // ========================================================
   function applyState() {
     if (polaroidImage) {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.className = `theme-${state.theme}`;
   }
 
-  // Initial Default Placeholder Artwork
+  // Initial Default Placeholder
   const defaultPlaceholder = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
     <defs>
       <linearGradient id="bgInit" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyState();
   });
 
-  // Buttons Handlers
+  // Button Handlers
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyState();
   });
 
-  // 3D Mouse Movement
+  // 3D Motion
   let bounds;
   function updateBounds() {
     bounds = polaroidCard.getBoundingClientRect();
@@ -368,41 +368,143 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // HD Exporter
+  // ========================================================
+  // 📸 Native 2D Canvas Hardware Exporter (100% Pixel Perfect)
+  // ========================================================
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
-    btnExport.textContent = '⏳ 高清生成中...';
+    btnExport.textContent = '⏳ 高清渲染中...';
     btnExport.disabled = true;
 
     try {
-      const clone = polaroidCard.cloneNode(true);
-      clone.style.position = 'fixed';
-      clone.style.left = '-9999px';
-      clone.style.top = '-9999px';
-      clone.style.width = '330px';
-      clone.style.height = '410px';
-      clone.style.transform = 'none';
-      clone.style.borderRadius = '6px';
-      clone.style.boxShadow = '0 12px 36px rgba(0,0,0,0.3)';
-      clone.style.padding = '16px 16px 0 16px';
-      
-      clone.style.setProperty('--rx', '4deg');
-      clone.style.setProperty('--ry', '-6deg');
-      clone.style.setProperty('--posx', '35%');
-      clone.style.setProperty('--posy', '30%');
-      
-      document.body.appendChild(clone);
+      // 3x Ultra-HD Print Canvas (990 x 1230 px)
+      const scale = 3;
+      const cardW = 330 * scale;
+      const cardH = 410 * scale;
+      const padX = 16 * scale;
+      const padY = 16 * scale;
+      const photoSize = 298 * scale;
+      const radius = state.radius * scale;
 
-      const canvas = await html2canvas(clone, {
-        backgroundColor: null,
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        logging: false
-      });
+      const canvas = document.createElement('canvas');
+      canvas.width = cardW;
+      canvas.height = cardH;
+      const ctx = canvas.getContext('2d');
 
-      document.body.removeChild(clone);
+      // 1. Draw Paper Background
+      let paperColor = '#fdfdfd';
+      if (state.paper === 'cream') paperColor = '#fef7ea';
+      else if (state.paper === 'pink') paperColor = '#fdf2f8';
+      else if (state.paper === 'black') paperColor = '#18181b';
 
+      ctx.fillStyle = paperColor;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, cardW, cardH, 6 * scale);
+      ctx.fill();
+
+      // 2. Draw Photo Pocket Clip Area with Radius
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(padX, padY, photoSize, photoSize, radius);
+      ctx.clip();
+
+      // Base Black Background
+      ctx.fillStyle = '#18181b';
+      ctx.fillRect(padX, padY, photoSize, photoSize);
+
+      // 3. Draw Filtered Image
+      ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
+      ctx.drawImage(polaroidImage, padX, padY, photoSize, photoSize);
+      ctx.filter = 'none';
+
+      // 4. Draw Glare Overlay (Natural 35° Soft Film Glare)
+      if (state.glareOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha = state.glareOpacity;
+        ctx.globalCompositeOperation = 'screen';
+        const glareGrad = ctx.createLinearGradient(padX, padY, padX + photoSize, padY + photoSize);
+        glareGrad.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+        glareGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.1)');
+        glareGrad.addColorStop(0.7, 'transparent');
+        ctx.fillStyle = glareGrad;
+        ctx.fillRect(padX, padY, photoSize, photoSize);
+        ctx.restore();
+      }
+
+      // 5. Draw Holographic Foil Overlay
+      if (state.holoOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha = state.holoOpacity;
+        ctx.globalCompositeOperation = 'screen';
+        const holoGrad = ctx.createLinearGradient(padX, padY, padX + photoSize, padY + photoSize);
+        if (state.theme === 'sunset') {
+          holoGrad.addColorStop(0, 'rgba(255, 126, 95, 0.8)');
+          holoGrad.addColorStop(0.5, 'rgba(254, 180, 123, 0.7)');
+          holoGrad.addColorStop(1, 'rgba(255, 42, 109, 0.8)');
+        } else if (state.theme === 'cyber') {
+          holoGrad.addColorStop(0, 'rgba(0, 240, 255, 0.8)');
+          holoGrad.addColorStop(0.5, 'rgba(255, 0, 85, 0.8)');
+          holoGrad.addColorStop(1, 'rgba(0, 255, 102, 0.8)');
+        } else if (state.theme === 'golden') {
+          holoGrad.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
+          holoGrad.addColorStop(0.5, 'rgba(255, 235, 160, 0.6)');
+          holoGrad.addColorStop(1, 'rgba(218, 165, 32, 0.9)');
+        } else {
+          // Rainbow
+          holoGrad.addColorStop(0, 'rgba(255, 0, 128, 0.7)');
+          holoGrad.addColorStop(0.25, 'rgba(255, 140, 0, 0.7)');
+          holoGrad.addColorStop(0.5, 'rgba(64, 224, 208, 0.7)');
+          holoGrad.addColorStop(0.75, 'rgba(123, 104, 238, 0.7)');
+          holoGrad.addColorStop(1, 'rgba(255, 0, 128, 0.7)');
+        }
+        ctx.fillStyle = holoGrad;
+        ctx.fillRect(padX, padY, photoSize, photoSize);
+        ctx.restore();
+      }
+
+      // 6. Draw Vignette (Radial Inner Shadow)
+      if (state.vignette > 0) {
+        ctx.save();
+        const vAlpha = (state.vignette / 100) * 0.7;
+        const cx = padX + photoSize / 2;
+        const cy = padY + photoSize / 2;
+        const vigGrad = ctx.createRadialGradient(cx, cy, photoSize * 0.3, cx, cy, photoSize * 0.7);
+        vigGrad.addColorStop(0, 'transparent');
+        vigGrad.addColorStop(1, `rgba(0, 0, 0, ${vAlpha})`);
+        ctx.fillStyle = vigGrad;
+        ctx.fillRect(padX, padY, photoSize, photoSize);
+        ctx.restore();
+      }
+
+      // End Photo Pocket Clip
+      ctx.restore();
+
+      // 7. Draw Handwritten Caption & Date on Chin
+      const chinY = padY + photoSize + 8 * scale;
+      const chinH = cardH - chinY;
+      const textCenterY = chinY + chinH / 2;
+
+      // Caption
+      ctx.save();
+      ctx.translate(cardW / 2, textCenterY - 10 * scale);
+      ctx.rotate(-0.5 * Math.PI / 180);
+      ctx.fillStyle = state.paper === 'black' ? '#f4f4f5' : state.inkColor;
+      ctx.font = `bold ${24 * scale}px 'Caveat', cursive, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(inputCaption.value || 'Untitled', 0, 0);
+      ctx.restore();
+
+      // Date
+      ctx.save();
+      ctx.fillStyle = '#64748b';
+      ctx.font = `bold ${9.5 * scale}px 'JetBrains Mono', monospace, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(inputDate.value || '', cardW / 2, textCenterY + 16 * scale);
+      ctx.restore();
+
+      // 8. Trigger PNG Download
       const link = document.createElement('a');
       const safeName = (inputCaption.value || 'Polaroid').replace(/\s+/g, '_');
       link.download = `Polaroid-${safeName}.png`;
