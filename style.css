@@ -587,6 +587,53 @@ input:focus {
   flex-direction: column;
 }
 
+/* Couple Cards Pair (Two distinct cards side-by-side) */
+.couple-cards-pair {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.polaroid-card-dual {
+  width: 270px;
+  height: 345px;
+  padding: 13px 13px 0 13px;
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+}
+
+.polaroid-card-dual .photo-pocket {
+  width: 244px;
+  height: 244px;
+}
+
+.polaroid-card-dual .handwritten-caption {
+  font-size: 20px;
+}
+
+.polaroid-card-dual .handwritten-date {
+  font-size: 8.5px;
+}
+
+.card-left {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(-2.5deg) translateY(-2px);
+}
+
+.card-right {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(2.5deg) translateY(2px);
+}
+
+.card-left:hover {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(-0.5deg) scale(1.03);
+  z-index: 5;
+}
+
+.card-right:hover {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(0.5deg) scale(1.03);
+  z-index: 5;
+}
+
 /* Paper Tones */
 .paper-white { background-color: #fdfdfd; }
 .paper-cream { background-color: #fef7ea; }
@@ -602,12 +649,30 @@ input:focus {
   animation: polaroidFloat 6s ease-in-out infinite;
 }
 
+.couple-cards-pair.auto-spinning .card-left {
+  animation: coupleFloatLeft 6s ease-in-out infinite;
+}
+
+.couple-cards-pair.auto-spinning .card-right {
+  animation: coupleFloatRight 6s ease-in-out infinite 0.5s;
+}
+
 @keyframes polaroidFloat {
   0% { transform: rotateX(10deg) rotateY(-14deg) translateY(-6px); }
   25% { transform: rotateX(-8deg) rotateY(-10deg) translateY(4px); }
   50% { transform: rotateX(-12deg) rotateY(14deg) translateY(-4px); }
   75% { transform: rotateX(6deg) rotateY(10deg) translateY(6px); }
   100% { transform: rotateX(10deg) rotateY(-14deg) translateY(-6px); }
+}
+
+@keyframes coupleFloatLeft {
+  0%, 100% { transform: rotateX(8deg) rotateY(-10deg) rotateZ(-3deg) translateY(-4px); }
+  50% { transform: rotateX(-6deg) rotateY(10deg) rotateZ(-1deg) translateY(4px); }
+}
+
+@keyframes coupleFloatRight {
+  0%, 100% { transform: rotateX(-6deg) rotateY(10deg) rotateZ(3deg) translateY(4px); }
+  50% { transform: rotateX(8deg) rotateY(-10deg) rotateZ(1deg) translateY(-4px); }
 }
 
 .polaroid-body {
@@ -633,34 +698,6 @@ input:focus {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-/* Dual Couple Photo Wrap */
-.dual-photo-wrap {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background: #18181b;
-}
-
-.dual-photo-left,
-.dual-photo-right {
-  flex: 1;
-  width: 50%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.dual-photo-divider {
-  width: 2px;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.4);
-  flex-shrink: 0;
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
-  z-index: 2;
 }
 
 /* Vignette Shadow Overlay */

@@ -31,25 +31,68 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
                 image_src = payload.get('imageSrc', '')
                 image_src1 = payload.get('imageSrc1', '')
                 image_src2 = payload.get('imageSrc2', '')
+                caption = payload.get('caption', 'Untitled')
+                caption1 = payload.get('caption1', 'His Smile · 2026')
+                caption2 = payload.get('caption2', 'Her World · 2026')
+                date_str = payload.get('date', '')
+                date_dual = payload.get('dateDual', '2026.09.05 / Together')
                 
-                # Build photo pocket markup based on mode
+                filter_css = f"filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);"
+                
                 if mode == 'dual':
-                    photo_pocket_inner = f"""
-        <div style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; background: #18181b;">
-          <img src="{image_src1}" style="width: 50%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
-          <div style="width: 2px; height: 100%; background: rgba(255,255,255,0.4); flex-shrink: 0; z-index: 2;"></div>
-          <img src="{image_src2}" style="width: 50%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
+                    cards_markup = f"""
+  <div id="captureTarget" style="display: flex; gap: 24px; padding: 24px; align-items: center; justify-content: center;">
+    <!-- Left Card (TA) -->
+    <div class="polaroid-card" style="width: 270px; height: 345px; transform: rotate(-2deg); padding: 13px 13px 0 13px; background-color: {self.get_paper_color(state.get('paper', 'white'))};">
+      <div class="polaroid-body">
+        <div class="photo-pocket" style="width: 244px; height: 244px; border-radius: {state.get('radius', 4)}px;">
+          <img src="{image_src1}" style="width: 100%; height: 100%; object-fit: cover; display: block; {filter_css}">
+          <div class="film-glare"></div>
+          <div class="film-hologram"></div>
+          <div class="photo-vignette"></div>
         </div>
-        <div class="film-glare"></div>
-        <div class="film-hologram"></div>
-        <div class="photo-vignette"></div>
+        <div class="polaroid-chin">
+          <div class="handwritten-caption" style="font-size: 20px;">{caption1}</div>
+          <div class="handwritten-date" style="font-size: 8.5px;">{date_dual}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Card (ME) -->
+    <div class="polaroid-card" style="width: 270px; height: 345px; transform: rotate(2deg); padding: 13px 13px 0 13px; background-color: {self.get_paper_color(state.get('paper', 'white'))};">
+      <div class="polaroid-body">
+        <div class="photo-pocket" style="width: 244px; height: 244px; border-radius: {state.get('radius', 4)}px;">
+          <img src="{image_src2}" style="width: 100%; height: 100%; object-fit: cover; display: block; {filter_css}">
+          <div class="film-glare"></div>
+          <div class="film-hologram"></div>
+          <div class="photo-vignette"></div>
+        </div>
+        <div class="polaroid-chin">
+          <div class="handwritten-caption" style="font-size: 20px;">{caption2}</div>
+          <div class="handwritten-date" style="font-size: 8.5px;">{date_dual}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 """
                 else:
-                    photo_pocket_inner = f"""
-        <img src="{image_src}" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness({state.get('brightness', 100)}%) contrast({state.get('contrast', 105)}%) saturate({state.get('saturation', 110)}%) sepia({state.get('warmth', 15)}%);">
-        <div class="film-glare"></div>
-        <div class="film-hologram"></div>
-        <div class="photo-vignette"></div>
+                    cards_markup = f"""
+  <div id="captureTarget" style="display: flex; padding: 20px; align-items: center; justify-content: center;">
+    <div class="polaroid-card" style="width: 330px; height: 410px; padding: 16px 16px 0 16px; background-color: {self.get_paper_color(state.get('paper', 'white'))};">
+      <div class="polaroid-body">
+        <div class="photo-pocket" style="width: 298px; height: 298px; border-radius: {state.get('radius', 4)}px;">
+          <img src="{image_src}" style="width: 100%; height: 100%; object-fit: cover; display: block; {filter_css}">
+          <div class="film-glare"></div>
+          <div class="film-hologram"></div>
+          <div class="photo-vignette"></div>
+        </div>
+        <div class="polaroid-chin">
+          <div class="handwritten-caption">{caption}</div>
+          <div class="handwritten-date">{date_str}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 """
 
                 capture_html = f"""<!DOCTYPE html>
@@ -70,16 +113,12 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
       font-family: 'Plus Jakarta Sans', sans-serif;
     }}
     .polaroid-card {{
-      width: 330px;
-      height: 410px;
       border-radius: 6px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.25);
-      padding: 16px 16px 0 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      background-color: {self.get_paper_color(state.get('paper', 'white'))};
     }}
     .polaroid-body {{
       width: 100%;
@@ -89,10 +128,7 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
     }}
     .photo-pocket {{
       position: relative;
-      width: 298px;
-      height: 298px;
       background: #18181b;
-      border-radius: {state.get('radius', 4)}px;
       overflow: hidden;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
     }}
@@ -153,17 +189,7 @@ class StudioHandler(http.server.SimpleHTTPRequestHandler):
   </style>
 </head>
 <body>
-  <div class="polaroid-card" id="captureTarget">
-    <div class="polaroid-body">
-      <div class="photo-pocket">
-        {photo_pocket_inner}
-      </div>
-      <div class="polaroid-chin">
-        <div class="handwritten-caption">{payload.get('caption', '')}</div>
-        <div class="handwritten-date">{payload.get('date', '')}</div>
-      </div>
-    </div>
-  </div>
+  {cards_markup}
 </body>
 </html>"""
                 

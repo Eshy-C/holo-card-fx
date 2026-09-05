@@ -190,11 +190,12 @@
         </div>
       </section>
 
-      <!-- 5. Handwritten Caption & Ink (2-Column Inputs) -->
+      <!-- 5. Handwritten Caption & Ink -->
       <section class="control-card">
         <div class="card-title"><span class="card-icon">✍️</span> 拍立得手写签名与笔墨</div>
         
-        <div class="inputs-grid">
+        <!-- Single Mode Inputs -->
+        <div class="inputs-grid" id="singleInputsWrap">
           <div class="form-group">
             <label>手写寄语</label>
             <input type="text" id="inputCaption" value="Summer Vibes · 2026" maxlength="30">
@@ -202,6 +203,24 @@
           <div class="form-group">
             <label>拍摄日期 / 地点</label>
             <input type="text" id="inputDate" value="2026.09.05 / Tokyo" maxlength="24">
+          </div>
+        </div>
+
+        <!-- Couple Dual Cards Inputs -->
+        <div class="dual-inputs-container" id="dualInputsWrap" style="display: none;">
+          <div class="inputs-grid">
+            <div class="form-group">
+              <label>左卡寄语 (TA)</label>
+              <input type="text" id="inputCaption1" value="His Smile · 2026" maxlength="26">
+            </div>
+            <div class="form-group">
+              <label>右卡寄语 (我)</label>
+              <input type="text" id="inputCaption2" value="Her World · 2026" maxlength="26">
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 6px;">
+            <label>共同纪念日期 / 地点</label>
+            <input type="text" id="inputDateDual" value="2026.09.05 / Together" maxlength="24">
           </div>
         </div>
         
@@ -221,43 +240,65 @@
     <!-- 3D Stage -->
     <section class="stage-container">
       <div class="stage-hint">
-        <span>✨ 晃动鼠标体验 3D 悬浮与实时参数渲染</span>
+        <span id="stageHintText">✨ 晃动鼠标体验 3D 悬浮与实时参数渲染</span>
       </div>
 
-      <!-- 3D Scene -->
+      <!-- 3D Scene Container -->
       <div class="card-scene" id="cardScene">
-        <!-- True Polaroid Frame Card -->
+        
+        <!-- 1. Single Mode Card -->
         <div class="polaroid-card paper-white" id="polaroidCard">
-          
           <div class="polaroid-body">
-            
-            <!-- Dark Glossy Photo Area (Square / Classic 1:1 Aspect) -->
             <div class="photo-pocket" id="photoPocket">
-              <!-- Single Photo Image -->
-              <img id="polaroidImage" src="" alt="Polaroid Photo" class="polaroid-img-single" crossorigin="anonymous">
-
-              <!-- Dual Couple Photos Grid -->
-              <div class="dual-photo-wrap" id="dualPhotoWrap" style="display: none;">
-                <img id="polaroidImage1" src="" alt="Left Photo" class="dual-photo-left" crossorigin="anonymous">
-                <div class="dual-photo-divider"></div>
-                <img id="polaroidImage2" src="" alt="Right Photo" class="dual-photo-right" crossorigin="anonymous">
-              </div>
-
-              <!-- Internal Glare & Shimmer Layers (Strictly clipped to Photo Box) -->
+              <img id="polaroidImage" src="" alt="Polaroid Photo" crossorigin="anonymous">
               <div class="film-glare" id="filmGlare"></div>
               <div class="film-hologram" id="filmHologram"></div>
               <div class="photo-vignette" id="photoVignette"></div>
             </div>
-
-            <!-- Bottom Classic White Chin for Handwritten Text -->
-            <div class="polaroid-chin" id="polaroidChin">
+            <div class="polaroid-chin">
               <div class="handwritten-caption" id="displayCaption">Summer Vibes · 2026</div>
               <div class="handwritten-date" id="displayDate">2026.09.05 / Tokyo</div>
             </div>
+          </div>
+        </div>
 
+        <!-- 2. Couple Dual Cards Pair (Two distinct floating cards side-by-side) -->
+        <div class="couple-cards-pair" id="coupleCardsWrap" style="display: none;">
+          
+          <!-- Left Card (TA) -->
+          <div class="polaroid-card polaroid-card-dual card-left paper-white" id="polaroidCard1">
+            <div class="polaroid-body">
+              <div class="photo-pocket" id="photoPocket1">
+                <img id="polaroidImage1" src="" alt="Left Photo" crossorigin="anonymous">
+                <div class="film-glare" id="filmGlare1"></div>
+                <div class="film-hologram" id="filmHologram1"></div>
+                <div class="photo-vignette" id="photoVignette1"></div>
+              </div>
+              <div class="polaroid-chin">
+                <div class="handwritten-caption" id="displayCaption1">His Smile · 2026</div>
+                <div class="handwritten-date" id="displayDate1">2026.09.05 / Together</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Card (我) -->
+          <div class="polaroid-card polaroid-card-dual card-right paper-white" id="polaroidCard2">
+            <div class="polaroid-body">
+              <div class="photo-pocket" id="photoPocket2">
+                <img id="polaroidImage2" src="" alt="Right Photo" crossorigin="anonymous">
+                <div class="film-glare" id="filmGlare2"></div>
+                <div class="film-hologram" id="filmHologram2"></div>
+                <div class="photo-vignette" id="photoVignette2"></div>
+              </div>
+              <div class="polaroid-chin">
+                <div class="handwritten-caption" id="displayCaption2">Her World · 2026</div>
+                <div class="handwritten-date" id="displayDate2">2026.09.05 / Together</div>
+              </div>
+            </div>
           </div>
 
         </div>
+
       </div>
     </section>
   </main>
