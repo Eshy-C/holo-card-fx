@@ -1012,33 +1012,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     isDemoRunning = true;
     demoAbort = false;
+    if (isAutoSpinning) {
+      isAutoSpinning = false;
+      applyState();
+    }
+
     btnAutoDemo.textContent = '⏹️ 停止演示';
     btnAutoDemo.classList.remove('btn-demo');
     btnAutoDemo.classList.add('btn-primary');
 
     virtualCursor.style.display = 'block';
-    virtualCursor.style.left = `${window.innerWidth / 2}px`;
-    virtualCursor.style.top = `${window.innerHeight / 2}px`;
-    virtualCursor.dataset.x = window.innerWidth / 2;
-    virtualCursor.dataset.y = window.innerHeight / 2;
+    const initX = window.innerWidth / 2;
+    const initY = window.innerHeight / 2;
+    virtualCursor.style.left = `${initX}px`;
+    virtualCursor.style.top = `${initY}px`;
+    virtualCursor.dataset.x = initX;
+    virtualCursor.dataset.y = initY;
 
     try {
       // 1. [0-4s] 3D 悬浮与激光流动演示
       updateBounds();
       const sceneCenterX = bounds.left + bounds.width / 2;
       const sceneCenterY = bounds.top + bounds.height / 2;
-      await moveCursor(sceneCenterX, sceneCenterY, 500);
+      await moveCursor(sceneCenterX, sceneCenterY, 600);
 
-      for (let i = 0; i < 2; i++) {
+      // 平滑画 2 圈大椭圆
+      const totalSteps = 60;
+      for (let s = 0; s <= totalSteps; s++) {
         if (demoAbort) break;
-        const steps = 30;
-        for (let s = 0; s <= steps; s++) {
-          if (demoAbort) break;
-          const rad = (s / steps) * Math.PI * 2;
-          const nx = sceneCenterX + Math.cos(rad) * 150;
-          const ny = sceneCenterY + Math.sin(rad) * 110;
-          await moveCursor(nx, ny, 30);
-        }
+        const rad = (s / totalSteps) * Math.PI * 4; // 2 full revolutions
+        const nx = sceneCenterX + Math.cos(rad) * 160;
+        const ny = sceneCenterY + Math.sin(rad) * 120;
+        virtualCursor.style.left = `${nx}px`;
+        virtualCursor.style.top = `${ny}px`;
+        virtualCursor.dataset.x = nx;
+        virtualCursor.dataset.y = ny;
+        handlePointerMove({ clientX: nx, clientY: ny });
+        await sleep(35);
       }
 
       if (demoAbort) return;
