@@ -1,13 +1,11 @@
 /**
- * HoloCard FX - 3D Interactive Holographic Polaroid Engine, Particles & HD Exporter
+ * HoloCard FX - 3D Interactive Holographic Framed Avatar Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const holoCard = document.getElementById('holoCard');
   const cardScene = document.getElementById('cardScene');
-  const cardFrontFace = document.getElementById('cardFrontFace');
-  const cardBackFace = document.getElementById('cardBackFace');
   const particleCanvas = document.getElementById('particleCanvas');
   const ctxParticles = particleCanvas ? particleCanvas.getContext('2d') : null;
   
@@ -15,20 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputName = document.getElementById('inputName');
   const displayName = document.getElementById('displayName');
   
-  const inputSubtitle = document.getElementById('inputSubtitle');
-  const displaySubtitle = document.getElementById('displaySubtitle');
-  
-  const inputBadge = document.getElementById('inputBadge');
-  const displayBadge = document.getElementById('displayBadge');
-  
   const imageInput = document.getElementById('imageInput');
   const cardImage = document.getElementById('cardImage');
   const uploadDropzone = document.getElementById('uploadDropzone');
   
   // Toggles & Actions
-  const togglePopout = document.getElementById('togglePopout');
   const btnSoundToggle = document.getElementById('btnSoundToggle');
-  const btnFlip = document.getElementById('btnFlip');
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnExport = document.getElementById('btnExport');
   const styleBtns = document.querySelectorAll('.style-btn');
@@ -37,18 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isAutoSpinning = false;
   let isSoundEnabled = true;
-  let isFlipped = false;
 
   // ========================================================
   // 🖼️ High Quality SVG Data URIs for Zero-CORS Presets
   // ========================================================
   function generatePresetSVG(type) {
     if (type === 'agent') {
-      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="780" viewBox="0 0 600 780">
         <defs>
           <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="%231e1b4b"/>
-            <stop offset="50%" stop-color="%234338ca"/>
+            <stop offset="0%" stop-color="%230f172a"/>
+            <stop offset="50%" stop-color="%23312e81"/>
             <stop offset="100%" stop-color="%2306b6d4"/>
           </linearGradient>
           <radialGradient id="g2" cx="50%" cy="40%" r="50%">
@@ -56,16 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <stop offset="100%" stop-color="%23000000" stop-opacity="0"/>
           </radialGradient>
         </defs>
-        <rect width="600" height="700" fill="url(%23g1)"/>
-        <circle cx="300" cy="280" r="180" fill="url(%23g2)"/>
+        <rect width="600" height="780" fill="url(%23g1)"/>
+        <circle cx="300" cy="320" r="200" fill="url(%23g2)"/>
         <!-- Cyber Avatar Silhouette -->
-        <circle cx="300" cy="250" r="70" fill="%23ffffff" opacity="0.9"/>
-        <rect x="230" y="235" width="140" height="26" rx="13" fill="%2300f0ff"/>
-        <path d="M180 430 C180 340, 420 340, 420 430 L420 520 L180 520 Z" fill="%23e0e7ff" opacity="0.85"/>
-        <text x="300" y="580" fill="%2300f0ff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">CYBER AGENT CORE</text>
+        <circle cx="300" cy="280" r="80" fill="%23ffffff" opacity="0.95"/>
+        <rect x="220" y="260" width="160" height="30" rx="15" fill="%2300f0ff"/>
+        <path d="M160 480 C160 380, 440 380, 440 480 L440 600 L160 600 Z" fill="%23e0e7ff" opacity="0.9"/>
       </svg>`;
     } else if (type === 'cat') {
-      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="780" viewBox="0 0 600 780">
         <defs>
           <linearGradient id="catG" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="%23831843"/>
@@ -73,22 +61,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <stop offset="100%" stop-color="%23f43f5e"/>
           </linearGradient>
         </defs>
-        <rect width="600" height="700" fill="url(%23catG)"/>
-        <circle cx="300" cy="350" r="140" fill="%23fdf2f8" opacity="0.95"/>
+        <rect width="600" height="780" fill="url(%23catG)"/>
+        <circle cx="300" cy="390" r="160" fill="%23fdf2f8" opacity="0.95"/>
         <!-- Cat ears -->
-        <polygon points="200,280 230,170 280,240" fill="%23fdf2f8"/>
-        <polygon points="400,280 370,170 320,240" fill="%23fdf2f8"/>
+        <polygon points="180,310 220,180 280,260" fill="%23fdf2f8"/>
+        <polygon points="420,310 380,180 320,260" fill="%23fdf2f8"/>
         <!-- Eyes -->
-        <circle cx="250" cy="330" r="16" fill="%230f172a"/>
-        <circle cx="350" cy="330" r="16" fill="%230f172a"/>
-        <circle cx="254" cy="326" r="5" fill="%23ffffff"/>
-        <circle cx="354" cy="326" r="5" fill="%23ffffff"/>
+        <circle cx="240" cy="360" r="18" fill="%230f172a"/>
+        <circle cx="360" cy="360" r="18" fill="%230f172a"/>
+        <circle cx="245" cy="355" r="6" fill="%23ffffff"/>
+        <circle cx="365" cy="355" r="6" fill="%23ffffff"/>
         <!-- Nose -->
-        <polygon points="300,360 290,350 310,350" fill="%23fb7185"/>
-        <text x="300" y="580" fill="%23ffffff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">QUANTUM NEKO</text>
+        <polygon points="300,400 288,388 312,388" fill="%23fb7185"/>
       </svg>`;
     } else {
-      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700" viewBox="0 0 600 700">
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="780" viewBox="0 0 600 780">
         <defs>
           <linearGradient id="dragG" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="%23064e3b"/>
@@ -96,20 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
             <stop offset="100%" stop-color="%2310b981"/>
           </linearGradient>
         </defs>
-        <rect width="600" height="700" fill="url(%23dragG)"/>
-        <circle cx="300" cy="320" r="130" fill="%23ecfdf5" opacity="0.9"/>
-        <polygon points="300,160 380,320 220,320" fill="%23064e3b"/>
-        <polygon points="300,200 350,300 250,300" fill="%2310b981"/>
-        <text x="300" y="580" fill="%23ffffff" font-size="28" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="4">NEON DRAGON</text>
+        <rect width="600" height="780" fill="url(%23dragG)"/>
+        <circle cx="300" cy="360" r="150" fill="%23ecfdf5" opacity="0.9"/>
+        <polygon points="300,180 400,360 200,360" fill="%23064e3b"/>
+        <polygon points="300,230 360,340 240,340" fill="%2310b981"/>
       </svg>`;
     }
   }
 
-  // Set default image to clean local Base64 SVG
+  // Set default image
   cardImage.src = generatePresetSVG('agent');
 
   // ========================================================
-  // 🔊 Web Audio API Synthesizer (Crystal Chimes & SSR Sparkles)
+  // 🔊 Web Audio API Synthesizer (Crystal Chimes)
   // ========================================================
   let audioCtx = null;
   function getAudioContext() {
@@ -183,25 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
       }, idx * 60);
     });
-  }
-
-  function playFlipSound() {
-    if (!isSoundEnabled) return;
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    try {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(320, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.07, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.22);
-    } catch (e) {}
   }
 
   btnSoundToggle.addEventListener('click', () => {
@@ -300,15 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderParticles();
 
   // 1. Dynamic Text & Value Binding
-  function bindInput(input, display, formatter = (v) => v) {
-    input.addEventListener('input', (e) => {
-      display.textContent = formatter(e.target.value);
+  if (inputName && displayName) {
+    inputName.addEventListener('input', (e) => {
+      displayName.textContent = e.target.value || '';
     });
   }
-
-  bindInput(inputName, displayName);
-  bindInput(inputSubtitle, displaySubtitle);
-  bindInput(inputBadge, displayBadge);
 
   // 2. 3D Tilt & Holographic Foil Physics Engine
   let bounds;
@@ -398,29 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. 🔄 3D Card Flip (Front / Back)
-  function toggleFlip() {
-    isFlipped = !isFlipped;
-    holoCard.classList.add('is-flipping');
-    holoCard.style.setProperty('--flip-angle', isFlipped ? '180deg' : '0deg');
-    btnFlip.textContent = isFlipped ? '🔄 翻转正面' : '🔄 翻转卡背';
-    playFlipSound();
-    setTimeout(() => holoCard.classList.remove('is-flipping'), 600);
-  }
-
-  btnFlip.addEventListener('click', toggleFlip);
-  holoCard.addEventListener('dblclick', toggleFlip);
-
-  // 5. 3D Pop-out Toggle
-  togglePopout.addEventListener('change', (e) => {
-    if (e.target.checked) {
-      holoCard.classList.add('popout-enabled');
-    } else {
-      holoCard.classList.remove('popout-enabled');
-    }
-  });
-
-  // 6. Avatar Blend Filters
+  // 4. Avatar Blend Filters
   filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       filterBtns.forEach((b) => b.classList.remove('active'));
@@ -433,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 7. Theme / Foil Texture Switching
+  // 5. Theme / Foil Texture Switching
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
@@ -446,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 8. Image Upload & Drag-and-Drop (Always base64 for safe export)
+  // 6. Image Upload & Drag-and-Drop (Always base64)
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -493,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 9. 🎥 Auto-Spin Video Recording Mode
+  // 7. 🎥 Auto-Spin Video Recording Mode
   btnAutoSpin.addEventListener('click', () => {
     isAutoSpinning = !isAutoSpinning;
     if (isAutoSpinning) {
@@ -511,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ========================================================
-  // 📸 Ultra-Reliable HD Snapshot Exporter
+  // 📸 Clean HD Snapshot Exporter
   // ========================================================
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
@@ -519,25 +460,22 @@ document.addEventListener('DOMContentLoaded', () => {
     btnExport.disabled = true;
 
     try {
-      const targetFace = isFlipped ? cardBackFace : cardFrontFace;
-      
-      // Clone the target face into an off-screen container without 3D transforms
-      const clone = targetFace.cloneNode(true);
+      const clone = holoCard.cloneNode(true);
       clone.style.position = 'fixed';
       clone.style.left = '-9999px';
       clone.style.top = '-9999px';
-      clone.style.width = '350px';
-      clone.style.height = '520px';
+      clone.style.width = '340px';
+      clone.style.height = '480px';
       clone.style.transform = 'none';
-      clone.style.borderRadius = '22px';
-      clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+      clone.style.borderRadius = '24px';
+      clone.style.boxShadow = '0 12px 36px rgba(0,0,0,0.6)';
       clone.style.overflow = 'hidden';
       
       document.body.appendChild(clone);
 
       const canvas = await html2canvas(clone, {
         backgroundColor: null,
-        scale: 2.5, // Crisp 2.5x HD Retina export
+        scale: 3, // Ultra HD 3x Retina output
         useCORS: true,
         allowTaint: true,
         logging: false
@@ -545,10 +483,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.body.removeChild(clone);
 
-      // Download PNG
       const link = document.createElement('a');
-      const safeName = (inputName.value || 'HoloCard').replace(/\s+/g, '_');
-      link.download = `HoloCard-${safeName}-${isFlipped ? 'Back' : 'Front'}.png`;
+      const safeName = (inputName.value || 'HoloAvatar').replace(/\s+/g, '_');
+      link.download = `HoloAvatar-${safeName}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       
