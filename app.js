@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const styleBtns = document.querySelectorAll('.style-btn');
   const paperBtns = document.querySelectorAll('.paper-btn');
   const inkDots = document.querySelectorAll('.ink-dot');
-  const presetBtns = document.querySelectorAll('.preset-btn');
 
   let isAutoSpinning = false;
 
@@ -78,12 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ⚡ Direct State Applier (Guaranteed Instant Visual Update)
   // ========================================================
   function applyState() {
-    // 1. Photo Image Filter
     if (polaroidImage) {
       polaroidImage.style.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) sepia(${state.warmth}%)`;
     }
 
-    // 2. Optical Layers
     if (filmHologram) {
       filmHologram.style.opacity = state.holoOpacity;
     }
@@ -91,95 +88,46 @@ document.addEventListener('DOMContentLoaded', () => {
       filmGlare.style.opacity = state.glareOpacity;
     }
 
-    // 3. Vignette Shadow
     if (photoVignette) {
       const vBlur = Math.round((state.vignette / 100) * 60);
       const vAlpha = (state.vignette / 100) * 0.7;
       photoVignette.style.boxShadow = `inset 0 0 ${vBlur}px rgba(0, 0, 0, ${vAlpha})`;
     }
 
-    // 4. Photo Pocket Radius
     if (photoPocket) {
       photoPocket.style.borderRadius = `${state.radius}px`;
     }
 
-    // 5. Ink Color
     if (displayCaption) {
       displayCaption.style.color = state.inkColor;
     }
 
-    // 6. Paper Background
     if (polaroidCard) {
       polaroidCard.className = `polaroid-card paper-${state.paper}${isAutoSpinning ? ' auto-spinning' : ''}`;
     }
 
-    // 7. Theme
     document.body.className = `theme-${state.theme}`;
   }
 
-  // ========================================================
-  // 🖼️ Clean SVG Preset Data URIs (Instant & Zero CORS)
-  // ========================================================
-  function generatePresetSVG(type) {
-    let svg = '';
-    if (type === 'portrait') {
-      svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-        <defs>
-          <linearGradient id="bgP" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#fed7aa"/>
-            <stop offset="50%" stop-color="#fb923c"/>
-            <stop offset="100%" stop-color="#ea580c"/>
-          </linearGradient>
-        </defs>
-        <rect width="600" height="600" fill="url(#bgP)"/>
-        <circle cx="300" cy="230" r="100" fill="#431407" opacity="0.9"/>
-        <circle cx="300" cy="240" r="85" fill="#ffedd5"/>
-        <path d="M160 520 C160 370, 440 370, 440 520 Z" fill="#1e293b"/>
-      </svg>`;
-    } else if (type === 'cat') {
-      svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-        <defs>
-          <linearGradient id="catBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#fef3c7"/>
-            <stop offset="100%" stop-color="#f59e0b"/>
-          </linearGradient>
-        </defs>
-        <rect width="600" height="600" fill="url(#catBg)"/>
-        <circle cx="300" cy="340" r="160" fill="#fbbf24"/>
-        <polygon points="180,260 210,130 280,210" fill="#d97706"/>
-        <polygon points="420,260 390,130 320,210" fill="#d97706"/>
-        <circle cx="240" cy="320" r="18" fill="#1e293b"/>
-        <circle cx="360" cy="320" r="18" fill="#1e293b"/>
-        <circle cx="245" cy="315" r="6" fill="#ffffff"/>
-        <circle cx="365" cy="315" r="6" fill="#ffffff"/>
-        <polygon points="300,360 288,348 312,348" fill="#f43f5e"/>
-      </svg>`;
-    } else {
-      svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-        <defs>
-          <linearGradient id="scenBg" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#f43f5e"/>
-            <stop offset="40%" stop-color="#fb923c"/>
-            <stop offset="70%" stop-color="#fed7aa"/>
-            <stop offset="100%" stop-color="#38bdf8"/>
-          </linearGradient>
-        </defs>
-        <rect width="600" height="600" fill="url(#scenBg)"/>
-        <circle cx="300" cy="260" r="90" fill="#ffffff" opacity="0.95"/>
-        <polygon points="300,200 520,540 80,540" fill="#1e1b4b"/>
-        <polygon points="300,200 360,290 240,290" fill="#ffffff"/>
-      </svg>`;
-    }
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }
-
-  // Initialize Default Image
-  polaroidImage.src = generatePresetSVG('portrait');
+  // Initial Default Placeholder Artwork
+  const defaultPlaceholder = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+    <defs>
+      <linearGradient id="bgInit" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fed7aa"/>
+        <stop offset="50%" stop-color="#fb923c"/>
+        <stop offset="100%" stop-color="#ea580c"/>
+      </linearGradient>
+    </defs>
+    <rect width="600" height="600" fill="url(#bgInit)"/>
+    <circle cx="300" cy="230" r="100" fill="#431407" opacity="0.9"/>
+    <circle cx="300" cy="240" r="85" fill="#ffedd5"/>
+    <path d="M160 520 C160 370, 440 370, 440 520 Z" fill="#1e293b"/>
+  </svg>`;
+  
+  polaroidImage.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(defaultPlaceholder)}`;
   applyState();
 
-  // ========================================================
-  // ✍️ Text Input Binding
-  // ========================================================
+  // Text Binding
   inputCaption.addEventListener('input', (e) => {
     displayCaption.textContent = e.target.value || 'Untitled';
   });
@@ -187,9 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     displayDate.textContent = e.target.value || '';
   });
 
-  // ========================================================
-  // 🎛️ Granular Sliders Event Binding
-  // ========================================================
+  // Sliders Event Binding
   sliderHolo.addEventListener('input', (e) => {
     state.holoOpacity = e.target.value / 100;
     valHolo.textContent = `${e.target.value}%`;
@@ -238,9 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyState();
   });
 
-  // ========================================================
-  // 🎨 Style, Paper, Ink & Preset Click Handlers
-  // ========================================================
+  // Buttons Handlers
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
@@ -268,17 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  presetBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      presetBtns.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      polaroidImage.src = generatePresetSVG(btn.dataset.preset);
-    });
-  });
-
-  // ========================================================
-  // ↺ Reset All Controls
-  // ========================================================
+  // Reset Button
   btnReset.addEventListener('click', () => {
     state.holoOpacity = 0.45;
     state.glareOpacity = 0.35;
@@ -307,9 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyState();
   });
 
-  // ========================================================
-  // 🕹️ 3D Mouse Movement & Parallax Tilt
-  // ========================================================
+  // 3D Mouse Movement
   let bounds;
   function updateBounds() {
     bounds = polaroidCard.getBoundingClientRect();
@@ -382,9 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ========================================================
-  // 📂 Upload & Drag-and-Drop
-  // ========================================================
+  // Upload Handling
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -421,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 🎥 360° Auto-Spin
+  // Auto-Spin
   btnAutoSpin.addEventListener('click', () => {
     isAutoSpinning = !isAutoSpinning;
     if (isAutoSpinning) {
@@ -438,9 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ========================================================
-  // 📸 Ultra-High Resolution HD Exporter
-  // ========================================================
+  // HD Exporter
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
     btnExport.textContent = '⏳ 高清生成中...';
