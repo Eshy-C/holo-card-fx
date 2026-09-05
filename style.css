@@ -10,6 +10,7 @@
   /* Dynamic 3D & Foil CSS Variables (manipulated by JS) */
   --rx: 0deg;
   --ry: 0deg;
+  --flip-angle: 0deg;
   --mx: 50%;
   --my: 50%;
   --posx: 50%;
@@ -103,22 +104,22 @@ body {
 
 .header-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Buttons */
 .btn {
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 9px 16px;
+  padding: 8px 14px;
   border-radius: 10px;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn-primary {
@@ -468,19 +469,31 @@ textarea {
 }
 
 .stage-hint {
-  margin-bottom: 24px;
-  font-size: 13px;
+  margin-bottom: 20px;
+  font-size: 12.5px;
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.05);
   padding: 6px 16px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
 }
 
 /* 3D Scene */
 .card-scene {
   perspective: 1200px;
   padding: 40px;
+  position: relative;
+}
+
+/* Canvas Particle Overlay */
+.particle-canvas {
+  position: absolute;
+  inset: -100px;
+  width: calc(100% + 200px);
+  height: calc(100% + 200px);
+  pointer-events: none;
+  z-index: 10;
 }
 
 /* Holo Card Container */
@@ -489,17 +502,15 @@ textarea {
   width: 350px;
   height: 520px;
   border-radius: 22px;
-  background: #111422;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.8),
-    0 0 35px var(--card-glow, rgba(99, 102, 241, 0.2));
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+  transform: rotateX(var(--rx)) rotateY(calc(var(--ry) + var(--flip-angle)));
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
   cursor: grab;
   user-select: none;
-  overflow: visible;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+}
+
+.holo-card.is-flipping {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .holo-card.auto-spinning {
@@ -507,11 +518,165 @@ textarea {
 }
 
 @keyframes cardFloat {
-  0% { transform: rotateX(12deg) rotateY(-18deg) translateY(-8px); }
-  25% { transform: rotateX(-10deg) rotateY(-12deg) translateY(4px); }
-  50% { transform: rotateX(-14deg) rotateY(18deg) translateY(-6px); }
-  75% { transform: rotateX(8deg) rotateY(14deg) translateY(6px); }
-  100% { transform: rotateX(12deg) rotateY(-18deg) translateY(-8px); }
+  0% { transform: rotateX(12deg) rotateY(calc(-18deg + var(--flip-angle))) translateY(-8px); }
+  25% { transform: rotateX(-10deg) rotateY(calc(-12deg + var(--flip-angle))) translateY(4px); }
+  50% { transform: rotateX(-14deg) rotateY(calc(18deg + var(--flip-angle))) translateY(-6px); }
+  75% { transform: rotateX(8deg) rotateY(calc(14deg + var(--flip-angle))) translateY(6px); }
+  100% { transform: rotateX(12deg) rotateY(calc(-18deg + var(--flip-angle))) translateY(-8px); }
+}
+
+/* Card Faces (Front & Back) */
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: #111422;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.8),
+    0 0 35px var(--card-glow, rgba(99, 102, 241, 0.2));
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.card-front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: radial-gradient(circle at center, #1b203a 0%, #0c0e18 100%);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* =======================================================
+   🃏 CARD BACK DESIGN
+   ======================================================= */
+
+.back-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 70%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 2px, transparent 2px, transparent 8px);
+  z-index: 1;
+}
+
+.back-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.back-sigil-box {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sigil-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 215, 0, 0.4);
+}
+
+.outer-ring {
+  width: 160px;
+  height: 160px;
+  border: 2px solid rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.3);
+  animation: spinRing 20s linear infinite;
+}
+
+.inner-ring {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed rgba(236, 72, 153, 0.5);
+  animation: spinRingRev 15s linear infinite;
+}
+
+@keyframes spinRing { 100% { transform: rotate(360deg); } }
+@keyframes spinRingRev { 100% { transform: rotate(-360deg); } }
+
+.sigil-core {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 2;
+}
+
+.sigil-icon { font-size: 36px; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
+.sigil-title { font-size: 15px; font-weight: 800; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px #818cf8; }
+.sigil-subtitle { font-size: 8px; font-weight: 700; color: #fbbf24; letter-spacing: 1.5px; }
+
+.back-bottom {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
+}
+
+.security-stamp {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(236, 72, 153, 0.2));
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.barcode-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.barcode-lines {
+  display: flex;
+  gap: 2px;
+  height: 24px;
+}
+
+.barcode-lines span {
+  width: 2px;
+  background: #cbd5e1;
+}
+.barcode-lines span:nth-child(even) { width: 3.5px; }
+.barcode-lines span:nth-child(3n) { width: 1.5px; }
+
+.barcode-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: #94a3b8;
 }
 
 /* 3D Multi-layer Parallax Depth */
@@ -617,27 +782,17 @@ textarea {
   transition: transform 0.3s ease;
 }
 
-/* =======================================================
-   🎨 AVATAR FUSION FILTERS
-   ======================================================= */
-
-/* 1. Cyber Duo-Tone Filter */
+/* Avatar Fusion Filters */
 .filter-cyber .art-img-wrapper {
   filter: contrast(140%) saturate(180%) hue-rotate(170deg) drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
 }
-
-/* 2. Golden Emboss Filter */
 .filter-gold .art-img-wrapper {
   filter: sepia(100%) contrast(150%) brightness(110%) saturate(220%) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
 }
-
-/* 3. Holo Ghost Blend */
 .filter-holo .art-img-wrapper {
   filter: invert(15%) contrast(180%) hue-rotate(270deg) brightness(120%);
   mix-blend-mode: screen;
 }
-
-/* 4. Retro Dither / High Contrast */
 .filter-dither .art-img-wrapper {
   filter: grayscale(100%) contrast(250%) brightness(105%);
 }
@@ -750,6 +905,10 @@ textarea {
   transition: opacity 0.3s ease;
 }
 
+.back-foil {
+  opacity: 0.45;
+}
+
 /* Cosmic Prismatic Theme */
 .theme-cosmic .layer-foil {
   background: 
@@ -791,7 +950,7 @@ textarea {
   background-size: 220% 220%, 100% 100%;
   background-position: var(--posx) var(--posy), center;
 }
-.theme-gold .holo-card {
+.theme-gold .card-face {
   --card-glow: rgba(255, 215, 0, 0.3);
   border-color: rgba(255, 215, 0, 0.35);
 }
@@ -814,7 +973,7 @@ textarea {
   background-size: 250% 250%, 100% 100%;
   background-position: var(--posx) var(--posy), center;
 }
-.theme-cyber .holo-card {
+.theme-cyber .card-face {
   --card-glow: rgba(0, 240, 255, 0.35);
   border-color: rgba(0, 240, 255, 0.4);
 }
@@ -837,7 +996,7 @@ textarea {
   background-size: 180% 180%, 100% 100%;
   background-position: var(--posx) var(--posy), center;
 }
-.theme-diamond .holo-card {
+.theme-diamond .card-face {
   --card-glow: rgba(147, 197, 253, 0.4);
   border-color: rgba(224, 242, 254, 0.45);
 }

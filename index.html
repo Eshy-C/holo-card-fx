@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>HoloCard FX · 3D 全息闪卡工坊</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +22,7 @@
     </div>
     <div class="header-actions">
       <button id="btnSoundToggle" class="btn btn-secondary" title="切换音效">🔊 音效: 开</button>
+      <button id="btnFlip" class="btn btn-secondary">🔄 翻转卡背</button>
       <button id="btnRandom" class="btn btn-secondary">🎲 随机属性</button>
       <button id="btnAutoSpin" class="btn btn-secondary">🎥 360° 巡航</button>
       <button id="btnExport" class="btn btn-primary">📸 导出高清卡片</button>
@@ -34,7 +35,7 @@
     <aside class="controls-panel">
       <div class="panel-header">
         <h2>🛠️ 卡牌定制工坊</h2>
-        <p>支持 3D 破框深度、头像艺术融合与全息光影合成</p>
+        <p>双面 3D 渲染、手机重力感应、星芒粒子与头像艺术融合</p>
       </div>
 
       <!-- Theme / Foil Texture -->
@@ -89,7 +90,7 @@
         </div>
       </section>
 
-      <!-- 3D Pop-out Setting -->
+      <!-- 3D Pop-out & Particle Settings -->
       <section class="control-section">
         <div class="toggle-row">
           <div>
@@ -172,70 +173,119 @@
 
     <!-- Right: 3D Stage -->
     <section class="stage-container">
-      <div class="stage-hint">
-        <span>✨ 晃动鼠标体验 3D 破框悬浮与晶体全息反光</span>
+      <div class="stage-hint" id="stageHint">
+        <span>✨ 晃动鼠标体验 3D 悬浮 / 双击或点击右上角翻转卡背 / 移动触发星芒粒子</span>
       </div>
 
       <!-- 3D Card Scene -->
       <div class="card-scene" id="cardScene">
+        
+        <!-- Interactive Particle Canvas Overlay -->
+        <canvas id="particleCanvas" class="particle-canvas"></canvas>
+
         <div class="holo-card popout-enabled" id="holoCard">
           
-          <!-- Holographic Shimmer Overlays -->
-          <div class="layer-foil"></div>
-          <div class="layer-glare"></div>
-          <div class="layer-sparkles"></div>
+          <!-- ================= FRONT FACE ================= -->
+          <div class="card-face card-front">
+            <!-- Holographic Shimmer Overlays -->
+            <div class="layer-foil"></div>
+            <div class="layer-glare"></div>
+            <div class="layer-sparkles"></div>
 
-          <!-- Card Content Body (Multi-layer 3D Depth) -->
-          <div class="card-inner">
-            
-            <!-- Card Header (Floating Layer) -->
-            <div class="card-top-bar float-layer">
-              <div class="card-name-group">
-                <span class="card-badge" id="displayType">⚡ AI / Compute</span>
-                <h3 class="card-name" id="displayName">Kai · Agent 架构师</h3>
+            <!-- Card Content Body (Multi-layer 3D Depth) -->
+            <div class="card-inner">
+              
+              <!-- Card Header (Floating Layer) -->
+              <div class="card-top-bar float-layer">
+                <div class="card-name-group">
+                  <span class="card-badge" id="displayType">⚡ AI / Compute</span>
+                  <h3 class="card-name" id="displayName">Kai · Agent 架构师</h3>
+                </div>
+                <div class="card-hp-group">
+                  <span class="hp-label">HP</span>
+                  <span class="hp-val" id="displayHp">9800</span>
+                </div>
               </div>
-              <div class="card-hp-group">
-                <span class="hp-label">HP</span>
-                <span class="hp-val" id="displayHp">9800</span>
-              </div>
-            </div>
 
-            <!-- Card Artwork Frame (High 3D Pop-out Layer) -->
-            <div class="card-art-box popout-target">
-              <div class="art-img-wrapper" id="artWrapper">
-                <img id="cardImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Card Artwork" crossorigin="anonymous">
+              <!-- Card Artwork Frame (High 3D Pop-out Layer) -->
+              <div class="card-art-box popout-target">
+                <div class="art-img-wrapper" id="artWrapper">
+                  <img id="cardImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Card Artwork" crossorigin="anonymous">
+                </div>
+                <div class="art-overlay"></div>
+                <div class="rarity-seal float-layer-seal" id="displayRarity">UR · SECRET</div>
               </div>
-              <div class="art-overlay"></div>
-              <div class="rarity-seal float-layer-seal" id="displayRarity">UR · SECRET</div>
-            </div>
 
-            <!-- Card Middle Stat Bar -->
-            <div class="card-mid-bar float-layer">
-              <div class="number-tag" id="displayNumber">NO. 007 / 999</div>
-              <div class="atk-tag">
-                <span>ATK</span>
-                <strong id="displayAtk">8500</strong>
+              <!-- Card Middle Stat Bar -->
+              <div class="card-mid-bar float-layer">
+                <div class="number-tag" id="displayNumber">NO. 007 / 999</div>
+                <div class="atk-tag">
+                  <span>ATK</span>
+                  <strong id="displayAtk">8500</strong>
+                </div>
               </div>
-            </div>
 
-            <!-- Card Bottom: Skill & Lore -->
-            <div class="card-bottom-info float-layer">
-              <div class="skill-title-row">
-                <span class="skill-icon">⚡</span>
-                <h4 class="skill-name" id="displaySkillName">多智能体共鸣 (Multi-Agent Swarm)</h4>
+              <!-- Card Bottom: Skill & Lore -->
+              <div class="card-bottom-info float-layer">
+                <div class="skill-title-row">
+                  <span class="skill-icon">⚡</span>
+                  <h4 class="skill-name" id="displaySkillName">多智能体共鸣 (Multi-Agent Swarm)</h4>
+                </div>
+                <p class="skill-desc" id="displaySkillDesc">
+                  唤醒并发的 AI Agent 集群节点，对一切底层屎山代码发起自动化重构，必定造成暴击伤害并免除所有线上 Bug 责任。
+                </p>
               </div>
-              <p class="skill-desc" id="displaySkillDesc">
-                唤醒并发的 AI Agent 集群节点，对一切底层屎山代码发起自动化重构，必定造成暴击伤害并免除所有线上 Bug 责任。
-              </p>
-            </div>
 
-            <!-- Card Footer -->
-            <div class="card-footer">
-              <span>HOLOCARD PROTOCOL</span>
-              <span>★ ILLUS. KAI_HEX ★</span>
-              <span>EDITION 2026</span>
+              <!-- Card Footer -->
+              <div class="card-footer">
+                <span>HOLOCARD PROTOCOL</span>
+                <span>★ ILLUS. KAI_HEX ★</span>
+                <span>EDITION 2026</span>
+              </div>
             </div>
           </div>
+
+          <!-- ================= BACK FACE ================= -->
+          <div class="card-face card-back">
+            <div class="layer-foil back-foil"></div>
+            <div class="layer-glare"></div>
+
+            <div class="back-inner">
+              <div class="back-header">
+                <span class="back-badge">OFFICIAL TCG CERTIFIED</span>
+                <span class="back-edition">SERIES 2026</span>
+              </div>
+
+              <!-- Center Holographic Sigil -->
+              <div class="back-sigil-box">
+                <div class="sigil-ring outer-ring"></div>
+                <div class="sigil-ring inner-ring"></div>
+                <div class="sigil-core">
+                  <span class="sigil-icon">🎴</span>
+                  <span class="sigil-title">HOLOCARD</span>
+                  <span class="sigil-subtitle">GENESIS PROTOCOL</span>
+                </div>
+              </div>
+
+              <!-- Bottom Barcode & Security Hologram -->
+              <div class="back-bottom">
+                <div class="security-stamp">
+                  <div class="stamp-glow"></div>
+                  <span>AUTHENTIC</span>
+                  <small>Eshy-C · KAI</small>
+                </div>
+                <div class="barcode-box">
+                  <div class="barcode-lines">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                  <span class="barcode-num">8 694002 994017</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

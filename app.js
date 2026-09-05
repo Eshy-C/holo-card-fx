@@ -1,11 +1,13 @@
 /**
- * HoloCard FX - 3D Interactive Holographic Card Engine & Sound Synthesizer
+ * HoloCard FX - 3D Interactive Holographic Card Engine, Particles & Gyroscope
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const holoCard = document.getElementById('holoCard');
   const cardScene = document.getElementById('cardScene');
+  const particleCanvas = document.getElementById('particleCanvas');
+  const ctxParticles = particleCanvas ? particleCanvas.getContext('2d') : null;
   
   // Inputs & Displays
   const inputName = document.getElementById('inputName');
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Toggles & Actions
   const togglePopout = document.getElementById('togglePopout');
   const btnSoundToggle = document.getElementById('btnSoundToggle');
+  const btnFlip = document.getElementById('btnFlip');
   const btnAutoSpin = document.getElementById('btnAutoSpin');
   const btnRandom = document.getElementById('btnRandom');
   const btnExport = document.getElementById('btnExport');
@@ -48,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isAutoSpinning = false;
   let isSoundEnabled = true;
+  let isFlipped = false;
 
   // ========================================================
   // 🔊 Web Audio API Synthesizer (Crystal Chimes & SSR Sparkles)
@@ -70,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function playShimmerSound(speedFactor = 1) {
     if (!isSoundEnabled) return;
     const now = performance.now();
-    if (now - lastSoundTime < 80) return; // throttle audio rate
+    if (now - lastSoundTime < 80) return;
     lastSoundTime = now;
 
     const ctx = getAudioContext();
@@ -81,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const gain = ctx.createGain();
       const filter = ctx.createBiquadFilter();
 
-      // High-pitched crystal frequency (1200Hz - 2400Hz)
       const baseFreq = 1400 + Math.random() * 800;
       osc.type = 'sine';
       osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
@@ -100,9 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.13);
-    } catch (e) {
-      // AudioContext policy fallback
-    }
+    } catch (e) {}
   }
 
   function playSSRChime() {
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = getAudioContext();
     if (!ctx) return;
 
-    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
     notes.forEach((freq, idx) => {
       setTimeout(() => {
         try {
@@ -118,10 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, ctx.currentTime);
-          
           gain.gain.setValueAtTime(0.08, ctx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start();
@@ -131,13 +130,119 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sound Toggle Button
+  function playFlipSound() {
+    if (!isSoundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.07, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.22);
+    } catch (e) {}
+  }
+
   btnSoundToggle.addEventListener('click', () => {
     isSoundEnabled = !isSoundEnabled;
     btnSoundToggle.textContent = isSoundEnabled ? '🔊 音效: 开' : '🔇 音效: 关';
     btnSoundToggle.style.color = isSoundEnabled ? '#e2e8f0' : '#94a3b8';
     if (isSoundEnabled) getAudioContext();
   });
+
+  // ========================================================
+  // ✨ Interactive Star Sparkle Particle Engine (Canvas)
+  // ========================================================
+  let particles = [];
+  function resizeParticleCanvas() {
+    if (!particleCanvas) return;
+    const rect = cardScene.getBoundingClientRect();
+    particleCanvas.width = rect.width + 200;
+    particleCanvas.height = rect.height + 200;
+  }
+  resizeParticleCanvas();
+  window.addEventListener('resize', resizeParticleCanvas);
+
+  function createSparkle(x, y) {
+    const colors = ['#ffd700', '#67e8f9', '#f472b6', '#c084fc', '#ffffff'];
+    const count = 2 + Math.floor(Math.random() * 2);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: x + 100 + (Math.random() - 0.5) * 20,
+        y: y + 100 + (Math.random() - 0.5) * 20,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: (Math.random() - 0.5) * 2.5 - 0.8,
+        size: 3 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        life: 0.95,
+        rotation: Math.random() * Math.PI,
+        vRot: (Math.random() - 0.5) * 0.1
+      });
+    }
+  }
+
+  function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+    let rot = Math.PI / 2 * 3;
+    let x = cx;
+    let y = cy;
+    let step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+      x = cx + Math.cos(rot) * outerRadius;
+      y = cy + Math.sin(rot) * outerRadius;
+      ctx.lineTo(x, y);
+      rot += step;
+
+      x = cx + Math.cos(rot) * innerRadius;
+      y = cy + Math.sin(rot) * innerRadius;
+      ctx.lineTo(x, y);
+      rot += step;
+    }
+    ctx.lineTo(cx, cy - outerRadius);
+    ctx.closePath();
+  }
+
+  function renderParticles() {
+    if (!ctxParticles) return;
+    ctxParticles.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha *= p.life;
+      p.rotation += p.vRot;
+
+      if (p.alpha <= 0.02) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctxParticles.save();
+      ctxParticles.globalAlpha = p.alpha;
+      ctxParticles.fillStyle = p.color;
+      ctxParticles.shadowBlur = 8;
+      ctxParticles.shadowColor = p.color;
+
+      ctxParticles.translate(p.x, p.y);
+      ctxParticles.rotate(p.rotation);
+      drawStar(ctxParticles, 0, 0, 4, p.size, p.size * 0.35);
+      ctxParticles.fill();
+      ctxParticles.restore();
+    }
+
+    requestAnimationFrame(renderParticles);
+  }
+  renderParticles();
 
   // Preset Images
   const presets = {
@@ -183,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mouseX = clientX - bounds.left;
     const mouseY = clientY - bounds.top;
 
-    // Movement speed for audio trigger
     const deltaX = Math.abs(clientX - lastX);
     const deltaY = Math.abs(clientY - lastY);
     const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -192,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (speed > 8) {
       playShimmerSound(Math.min(speed / 20, 2));
+      createSparkle(mouseX, mouseY);
     }
 
     const left = mouseX;
@@ -201,15 +306,12 @@ document.addEventListener('DOMContentLoaded', () => {
       y: top - bounds.height / 2
     };
 
-    // Calculate rotation (-22deg to +22deg)
     const rotateX = -(center.y / (bounds.height / 2)) * 22;
     const rotateY = (center.x / (bounds.width / 2)) * 22;
 
-    // Percentages for gradient positions
     const px = Math.min(Math.max((mouseX / bounds.width) * 100, 0), 100);
     const py = Math.min(Math.max((mouseY / bounds.height) * 100, 0), 100);
 
-    // Apply CSS Custom Properties
     holoCard.style.setProperty('--rx', `${rotateX.toFixed(2)}deg`);
     holoCard.style.setProperty('--ry', `${rotateY.toFixed(2)}deg`);
     holoCard.style.setProperty('--mx', `${px.toFixed(1)}%`);
@@ -232,10 +334,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   cardScene.addEventListener('mousemove', handlePointerMove);
   cardScene.addEventListener('mouseleave', handlePointerLeave);
-  cardScene.addEventListener('touchmove', handlePointerMove);
+  cardScene.addEventListener('touchmove', handlePointerMove, { passive: true });
   cardScene.addEventListener('touchend', handlePointerLeave);
 
-  // 3. 3D Pop-out Toggle
+  // 3. 📱 Mobile Gyroscope / Device Orientation
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (e) => {
+      if (isAutoSpinning || !e.gamma || !e.beta) return;
+      const gamma = Math.min(Math.max(e.gamma, -40), 40); // left/right tilt
+      const beta = Math.min(Math.max(e.beta - 45, -40), 40); // forward/back tilt
+      
+      const rotateY = (gamma / 40) * 22;
+      const rotateX = -(beta / 40) * 22;
+      
+      holoCard.style.setProperty('--rx', `${rotateX.toFixed(2)}deg`);
+      holoCard.style.setProperty('--ry', `${rotateY.toFixed(2)}deg`);
+      holoCard.style.setProperty('--posx', `${((gamma + 40) / 80 * 100).toFixed(1)}%`);
+      holoCard.style.setProperty('--posy', `${((beta + 40) / 80 * 100).toFixed(1)}%`);
+      holoCard.style.setProperty('--foil-opacity', '0.85');
+    });
+  }
+
+  // 4. 🔄 3D Card Flip (Front / Back)
+  function toggleFlip() {
+    isFlipped = !isFlipped;
+    holoCard.classList.add('is-flipping');
+    holoCard.style.setProperty('--flip-angle', isFlipped ? '180deg' : '0deg');
+    btnFlip.textContent = isFlipped ? '🔄 翻转正面' : '🔄 翻转卡背';
+    playFlipSound();
+    setTimeout(() => holoCard.classList.remove('is-flipping'), 600);
+  }
+
+  btnFlip.addEventListener('click', toggleFlip);
+  holoCard.addEventListener('dblclick', toggleFlip);
+
+  // 5. 3D Pop-out Toggle
   togglePopout.addEventListener('change', (e) => {
     if (e.target.checked) {
       holoCard.classList.add('popout-enabled');
@@ -244,21 +377,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 4. Avatar Blend Filters
+  // 6. Avatar Blend Filters
   filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       filterBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       const filter = btn.dataset.filter;
       
-      // Update body filter class
       document.body.classList.remove('filter-normal', 'filter-cyber', 'filter-gold', 'filter-holo', 'filter-dither');
       document.body.classList.add(`filter-${filter}`);
       playShimmerSound(1.5);
     });
   });
 
-  // 5. Theme / Foil Texture Switching
+  // 7. Theme / Foil Texture Switching
   styleBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       styleBtns.forEach((b) => b.classList.remove('active'));
@@ -271,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Image Upload & Drag-and-Drop
+  // 8. Image Upload & Drag-and-Drop
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -310,7 +442,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Preset Avatar Pickers
   presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const preset = btn.dataset.preset;
@@ -321,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 7. 🎥 Auto-Spin Video Recording Mode
+  // 9. 🎥 Auto-Spin Video Recording Mode
   btnAutoSpin.addEventListener('click', () => {
     isAutoSpinning = !isAutoSpinning;
     if (isAutoSpinning) {
@@ -338,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 8. 🎲 Randomizer for Fun Stats
+  // 10. 🎲 Randomizer for Fun Stats
   const randomPool = [
     {
       name: 'Kai · 赛博炼金术士',
@@ -417,7 +548,6 @@ document.addEventListener('DOMContentLoaded', () => {
     inputSkillDesc.value = item.desc;
     displaySkillDesc.textContent = item.desc;
 
-    // Trigger Style & Filter
     const targetStyleBtn = document.querySelector(`.style-btn[data-style="${item.style}"]`);
     if (targetStyleBtn) targetStyleBtn.click();
 
@@ -427,18 +557,19 @@ document.addEventListener('DOMContentLoaded', () => {
     playSSRChime();
   });
 
-  // 9. 📸 Card Snapshot Export
+  // 11. 📸 Card Snapshot Export (Front & Back)
   btnExport.addEventListener('click', async () => {
     const originalText = btnExport.textContent;
     btnExport.textContent = '⏳ 生成中...';
     btnExport.disabled = true;
 
     try {
-      // Temporarily remove 3D transform for clean screenshot
       const prevTransform = holoCard.style.transform;
       holoCard.style.transform = 'none';
 
-      const canvas = await html2canvas(holoCard, {
+      const targetFace = isFlipped ? document.querySelector('.card-back') : document.querySelector('.card-front');
+
+      const canvas = await html2canvas(targetFace, {
         backgroundColor: null,
         scale: 2,
         useCORS: true,
@@ -447,9 +578,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       holoCard.style.transform = prevTransform;
 
-      // Download trigger
       const link = document.createElement('a');
-      link.download = `HoloCard-${inputName.value.replace(/\s+/g, '_')}.png`;
+      link.download = `HoloCard-${inputName.value.replace(/\s+/g, '_')}-${isFlipped ? 'Back' : 'Front'}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (err) {
